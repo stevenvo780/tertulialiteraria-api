@@ -11,26 +11,34 @@ export class LibraryService {
   constructor(
     @InjectRepository(Library)
     private libraryRepository: Repository<Library>,
-    @InjectRepository(User)
-    private userRepository: Repository<User>,
   ) {}
 
   async create(createLibraryDto: CreateLibraryDto, user: User) {
     const newLibraryItem = new Library();
     Object.assign(newLibraryItem, createLibraryDto);
     newLibraryItem.author = user;
+
+    if (createLibraryDto.parentNoteId) {
+      const parentNote = await this.libraryRepository.findOne({
+        where: { id: createLibraryDto.parentNoteId, author: { id: user.id } },
+      });
+      newLibraryItem.parent = parentNote;
+    }
+
     return this.libraryRepository.save(newLibraryItem);
   }
 
   findAll(user: User) {
     return this.libraryRepository.find({
-      where: { author: { id: user.id } },
+      where: { author: { id: user.id }, parent: null },
+      relations: ['children'],
     });
   }
 
   findOne(id: number, user: User) {
     return this.libraryRepository.findOne({
       where: { id, author: { id: user.id } },
+      relations: ['children'],
     });
   }
 

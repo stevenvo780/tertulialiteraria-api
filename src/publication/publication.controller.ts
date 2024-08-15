@@ -23,8 +23,8 @@ import {
 
 @UseGuards(FirebaseAuthGuard)
 @ApiBearerAuth()
-@ApiTags('publication')
-@Controller('publication')
+@ApiTags('publications')
+@Controller('publications')
 export class PublicationController {
   constructor(private readonly publicationService: PublicationService) {}
 

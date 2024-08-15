@@ -16,8 +16,11 @@ export class Publication {
   @Column()
   title: string;
 
-  @Column('text')
-  content: string;
+  @Column('json')
+  content: {
+    html: string;
+    css: string;
+  };
 
   @Column()
   publicationDate: Date;

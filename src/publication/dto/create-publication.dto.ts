@@ -1,4 +1,4 @@
-import { IsString, IsDate } from 'class-validator';
+import { IsString, IsDate, IsObject } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreatePublicationDto {
@@ -6,12 +6,15 @@ export class CreatePublicationDto {
   @ApiProperty({ description: 'The title of the publication', type: String })
   title: string;
 
-  @IsString()
+  @IsObject()
   @ApiProperty({
-    description: 'The content of the publication',
-    type: String,
+    description: 'The content of the publication, including HTML and CSS',
+    type: Object,
   })
-  content: string;
+  content: {
+    html: string;
+    css: string;
+  };
 
   @IsDate()
   @ApiProperty({ description: 'The date of the publication', type: Date })

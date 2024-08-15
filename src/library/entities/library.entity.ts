@@ -5,6 +5,7 @@ import {
   Index,
   ManyToOne,
   JoinColumn,
+  OneToMany,
 } from 'typeorm';
 import { User } from '../../user/entities/user.entity';
 
@@ -26,4 +27,11 @@ export class Library {
   @JoinColumn()
   @Index()
   author: User;
+
+  @ManyToOne(() => Library, (library) => library.children)
+  @JoinColumn()
+  parent: Library;
+
+  @OneToMany(() => Library, (library) => library.parent)
+  children: Library[];
 }
