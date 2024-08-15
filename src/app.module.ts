@@ -9,6 +9,8 @@ import { ConfigModule } from '@nestjs/config';
 import { LoggerMiddleware } from './logger.middleware';
 import AppProvider from './app.provider';
 import { FirebaseAuthMiddleware } from './auth/firebase-auth.middleware';
+import { LibraryModule } from './library/library.module';
+import { PublicationModule } from './publication/publication.module';
 
 @Module({
   imports: [
@@ -26,6 +28,8 @@ import { FirebaseAuthMiddleware } from './auth/firebase-auth.middleware';
     AuthModule,
     EventsModule,
     UserModule,
+    PublicationModule,
+    LibraryModule,
   ],
   controllers: [AppController],
   providers: [AppService, AppProvider],
