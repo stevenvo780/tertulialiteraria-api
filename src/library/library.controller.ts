@@ -37,19 +37,19 @@ export class LibraryController {
     @Request() req: RequestWithUser,
     @Body() createLibraryDto: CreateLibraryDto,
   ) {
-    return this.libraryService.create(createLibraryDto, req.user.uid);
+    return this.libraryService.create(createLibraryDto, req.user);
   }
 
   @ApiOperation({ summary: 'Get all library references' })
   @Get()
   findAll(@Request() req: RequestWithUser) {
-    return this.libraryService.findAll(req.user.uid);
+    return this.libraryService.findAll(req.user);
   }
 
   @ApiOperation({ summary: 'Get a library reference by ID' })
   @Get(':id')
   findOne(@Request() req: RequestWithUser, @Param('id') id: string) {
-    return this.libraryService.findOne(+id, req.user.uid);
+    return this.libraryService.findOne(+id, req.user);
   }
 
   @ApiOperation({ summary: 'Update a library reference by ID' })

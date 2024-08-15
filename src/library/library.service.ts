@@ -15,25 +15,22 @@ export class LibraryService {
     private userRepository: Repository<User>,
   ) {}
 
-  async create(createLibraryDto: CreateLibraryDto, userId: string) {
-    const user = await this.userRepository.findOne({
-      where: { id: userId },
-    });
+  async create(createLibraryDto: CreateLibraryDto, user: User) {
     const newLibraryItem = new Library();
     Object.assign(newLibraryItem, createLibraryDto);
     newLibraryItem.author = user;
     return this.libraryRepository.save(newLibraryItem);
   }
 
-  findAll(userId: string) {
+  findAll(user: User) {
     return this.libraryRepository.find({
-      where: { author: { id: userId } },
+      where: { author: { id: user.id } },
     });
   }
 
-  findOne(id: number, userId: string) {
+  findOne(id: number, user: User) {
     return this.libraryRepository.findOne({
-      where: { id, author: { id: userId } },
+      where: { id, author: { id: user.id } },
     });
   }
 

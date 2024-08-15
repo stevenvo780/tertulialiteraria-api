@@ -18,6 +18,13 @@ export class AppController {
     return this.appService.getHello();
   }
 
+  @ApiOperation({ summary: 'Get application status' })
+  @ApiOkResponse({ description: 'Return the status of the application.' })
+  @Get('status')
+  async getStatus() {
+    return this.appService.getStatus();
+  }
+
   @ApiOperation({ summary: 'Get all routes' })
   @ApiOkResponse({ description: 'Return all routes.', type: [String] })
   @Get('routes')

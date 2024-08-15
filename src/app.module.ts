@@ -8,7 +8,6 @@ import { UserModule } from './user/user.module';
 import { ConfigModule } from '@nestjs/config';
 import { LoggerMiddleware } from './logger.middleware';
 import AppProvider from './app.provider';
-import { FirebaseAuthMiddleware } from './auth/firebase-auth.middleware';
 import { LibraryModule } from './library/library.module';
 import { PublicationModule } from './publication/publication.module';
 
@@ -17,13 +16,13 @@ import { PublicationModule } from './publication/publication.module';
     ConfigModule.forRoot(),
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: process.env.DB_HOST,
-      port: Number(process.env.DB_PORT),
-      username: process.env.DB_USERNAME,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_NAME,
+      host: process.env.DB_HOST || 'localhost',
+      port: Number(process.env.DB_PORT) || 5432,
+      username: process.env.DB_USERNAME || 'postgres',
+      password: process.env.DB_PASSWORD || 'postgres',
+      database: process.env.DB_NAME || 'postgres',
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
-      synchronize: true,
+      synchronize: process.env.DB_SYNCHRONIZE == 'true' ? true : false,
     }),
     AuthModule,
     EventsModule,
@@ -36,6 +35,6 @@ import { PublicationModule } from './publication/publication.module';
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(LoggerMiddleware, FirebaseAuthMiddleware).forRoutes('*');
+    consumer.apply(LoggerMiddleware).forRoutes('*');
   }
 }

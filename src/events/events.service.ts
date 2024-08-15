@@ -14,10 +14,7 @@ export class EventsService {
     @InjectRepository(User)
     private userRepository: Repository<User>,
   ) {}
-  async create(createEventsDto: CreateEventsDto, userId: string) {
-    const user = await this.userRepository.findOne({
-      where: { id: userId },
-    });
+  async create(createEventsDto: CreateEventsDto, user: User) {
     const dataEvent = new Events();
     Object.assign(dataEvent, createEventsDto);
     dataEvent.author = user;
@@ -25,15 +22,15 @@ export class EventsService {
     return this.eventsRepository.save(newEvents);
   }
 
-  findAll(userId: string) {
+  findAll(user: User) {
     return this.eventsRepository.find({
-      where: { author: { id: userId } },
+      where: { author: { id: user.id } },
     });
   }
 
-  findOne(id: number, userId: string) {
+  findOne(id: number, user: User) {
     return this.eventsRepository.findOne({
-      where: { id, author: { id: userId } },
+      where: { id, author: { id: user.id } },
     });
   }
 

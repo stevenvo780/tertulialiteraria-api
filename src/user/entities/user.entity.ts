@@ -9,10 +9,7 @@ export class User {
   @Column({ unique: true })
   email: string;
 
-  @Column()
-  password: string;
-
-  @Column()
+  @Column({ nullable: true })
   name: string;
 
   @OneToMany(() => Events, (events) => events.author)

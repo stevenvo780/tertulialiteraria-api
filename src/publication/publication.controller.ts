@@ -37,19 +37,19 @@ export class PublicationController {
     @Request() req: RequestWithUser,
     @Body() createPublicationDto: CreatePublicationDto,
   ) {
-    return this.publicationService.create(createPublicationDto, req.user.uid);
+    return this.publicationService.create(createPublicationDto, req.user);
   }
 
   @ApiOperation({ summary: 'Get all publications' })
   @Get()
   findAll(@Request() req: RequestWithUser) {
-    return this.publicationService.findAll(req.user.uid);
+    return this.publicationService.findAll(req.user);
   }
 
   @ApiOperation({ summary: 'Get a publication by ID' })
   @Get(':id')
   findOne(@Request() req: RequestWithUser, @Param('id') id: string) {
-    return this.publicationService.findOne(+id, req.user.uid);
+    return this.publicationService.findOne(+id, req.user);
   }
 
   @ApiOperation({ summary: 'Update a publication by ID' })

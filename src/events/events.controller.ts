@@ -37,19 +37,19 @@ export class EventsController {
     @Request() req: RequestWithUser,
     @Body() createEventsDto: CreateEventsDto,
   ) {
-    return this.eventsService.create(createEventsDto, req.user.uid);
+    return this.eventsService.create(createEventsDto, req.user);
   }
 
   @ApiOperation({ summary: 'Get all events' })
   @Get()
   findAll(@Request() req: RequestWithUser) {
-    return this.eventsService.findAll(req.user.uid);
+    return this.eventsService.findAll(req.user);
   }
 
   @ApiOperation({ summary: 'Get an event by ID' })
   @Get(':id')
   findOne(@Request() req: RequestWithUser, @Param('id') id: string) {
-    return this.eventsService.findOne(+id, req.user.uid);
+    return this.eventsService.findOne(+id, req.user);
   }
 
   @ApiOperation({ summary: 'Update an event by ID' })

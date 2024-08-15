@@ -15,25 +15,22 @@ export class PublicationService {
     private userRepository: Repository<User>,
   ) {}
 
-  async create(createPublicationDto: CreatePublicationDto, userId: string) {
-    const user = await this.userRepository.findOne({
-      where: { id: userId },
-    });
+  async create(createPublicationDto: CreatePublicationDto, user: User) {
     const newPublication = new Publication();
     Object.assign(newPublication, createPublicationDto);
     newPublication.author = user;
     return this.publicationRepository.save(newPublication);
   }
 
-  findAll(userId: string) {
+  findAll(user: User) {
     return this.publicationRepository.find({
-      where: { author: { id: userId } },
+      where: { author: { id: user.id } },
     });
   }
 
-  findOne(id: number, userId: string) {
+  findOne(id: number, user: User) {
     return this.publicationRepository.findOne({
-      where: { id, author: { id: userId } },
+      where: { id, author: { id: user.id } },
     });
   }
 
