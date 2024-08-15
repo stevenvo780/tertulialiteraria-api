@@ -8,6 +8,7 @@ import { UserModule } from './user/user.module';
 import { ConfigModule } from '@nestjs/config';
 import { LoggerMiddleware } from './logger.middleware';
 import AppProvider from './app.provider';
+import { FirebaseAuthMiddleware } from './auth/firebase-auth.middleware';
 
 @Module({
   imports: [
@@ -31,6 +32,6 @@ import AppProvider from './app.provider';
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(LoggerMiddleware).forRoutes('*');
+    consumer.apply(LoggerMiddleware, FirebaseAuthMiddleware).forRoutes('*');
   }
 }
