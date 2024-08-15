@@ -1,4 +1,5 @@
 import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { EventsModule } from './events/events.module';
@@ -10,6 +11,8 @@ import { LoggerMiddleware } from './logger.middleware';
 import AppProvider from './app.provider';
 import { LibraryModule } from './library/library.module';
 import { PublicationModule } from './publication/publication.module';
+import { FirebaseAuthGuard } from './auth/firebase-auth.guard';
+import { RolesGuard } from './auth/roles.guard';
 
 @Module({
   imports: [
@@ -22,7 +25,7 @@ import { PublicationModule } from './publication/publication.module';
       password: process.env.DB_PASSWORD || 'postgres',
       database: process.env.DB_NAME || 'postgres',
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
-      synchronize: process.env.DB_SYNCHRONIZE == 'true' ? true : false,
+      synchronize: process.env.DB_SYNCHRONIZE === 'true',
     }),
     AuthModule,
     EventsModule,
@@ -31,7 +34,18 @@ import { PublicationModule } from './publication/publication.module';
     LibraryModule,
   ],
   controllers: [AppController],
-  providers: [AppService, AppProvider],
+  providers: [
+    AppService,
+    AppProvider,
+    {
+      provide: APP_GUARD,
+      useClass: FirebaseAuthGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
+    },
+  ],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

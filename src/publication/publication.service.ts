@@ -11,8 +11,6 @@ export class PublicationService {
   constructor(
     @InjectRepository(Publication)
     private publicationRepository: Repository<Publication>,
-    @InjectRepository(User)
-    private userRepository: Repository<User>,
   ) {}
 
   async create(createPublicationDto: CreatePublicationDto, user: User) {
@@ -22,15 +20,13 @@ export class PublicationService {
     return this.publicationRepository.save(newPublication);
   }
 
-  findAll(user: User) {
-    return this.publicationRepository.find({
-      where: { author: { id: user.id } },
-    });
+  findAll() {
+    return this.publicationRepository.find();
   }
 
-  findOne(id: number, user: User) {
+  findOne(id: number) {
     return this.publicationRepository.findOne({
-      where: { id, author: { id: user.id } },
+      where: { id },
     });
   }
 

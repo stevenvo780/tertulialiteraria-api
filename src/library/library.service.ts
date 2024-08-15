@@ -30,18 +30,17 @@ export class LibraryService {
     return this.libraryRepository.save(newLibraryItem);
   }
 
-  findAll(user: User) {
+  findAll() {
     return this.libraryRepository
       .createQueryBuilder('library')
       .leftJoinAndSelect('library.children', 'children')
-      .where('library.authorId = :userId', { userId: user.id })
-      .andWhere('library.parent IS NULL')
+      .where('library.parent IS NULL')
       .getMany();
   }
 
-  findOne(id: number, user: User) {
+  findOne(id: number) {
     return this.libraryRepository.findOne({
-      where: { id, author: { id: user.id } },
+      where: { id },
       relations: ['children'],
     });
   }

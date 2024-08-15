@@ -13,6 +13,9 @@ import { EventsService } from './events.service';
 import { CreateEventsDto } from './dto/create-events.dto';
 import { UpdateEventsDto } from './dto/update-events.dto';
 import { FirebaseAuthGuard } from '../auth/firebase-auth.guard';
+import { RolesGuard } from '../auth/roles.guard';
+import { Roles } from '../auth/roles.decorator';
+import { UserRole } from '../user/entities/user.entity';
 import { RequestWithUser } from '../auth/types';
 import {
   ApiBearerAuth,
@@ -21,24 +24,10 @@ import {
   ApiCreatedResponse,
 } from '@nestjs/swagger';
 
-@UseGuards(FirebaseAuthGuard)
-@ApiBearerAuth()
 @ApiTags('events')
 @Controller('events')
 export class EventsController {
   constructor(private readonly eventsService: EventsService) {}
-
-  @ApiOperation({ summary: 'Create a new event' })
-  @ApiCreatedResponse({
-    description: 'The event has been successfully created.',
-  })
-  @Post()
-  create(
-    @Request() req: RequestWithUser,
-    @Body() createEventsDto: CreateEventsDto,
-  ) {
-    return this.eventsService.create(createEventsDto, req.user);
-  }
 
   @ApiOperation({ summary: 'Get all events' })
   @Get()
@@ -48,18 +37,39 @@ export class EventsController {
 
   @ApiOperation({ summary: 'Get an event by ID' })
   @Get(':id')
-  findOne(@Request() req: RequestWithUser, @Param('id') id: string) {
+  findOne(@Param('id') id: string) {
     return this.eventsService.findOne(+id);
+  }
+
+  @ApiOperation({ summary: 'Create a new event' })
+  @ApiCreatedResponse({
+    description: 'The event has been successfully created.',
+  })
+  @Post()
+  @UseGuards(FirebaseAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @ApiBearerAuth()
+  create(
+    @Request() req: RequestWithUser,
+    @Body() createEventsDto: CreateEventsDto,
+  ) {
+    return this.eventsService.create(createEventsDto, req.user);
   }
 
   @ApiOperation({ summary: 'Update an event by ID' })
   @Patch(':id')
+  @UseGuards(FirebaseAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @ApiBearerAuth()
   update(@Param('id') id: string, @Body() updateEventsDto: UpdateEventsDto) {
     return this.eventsService.update(+id, updateEventsDto);
   }
 
   @ApiOperation({ summary: 'Delete an event by ID' })
   @Delete(':id')
+  @UseGuards(FirebaseAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @ApiBearerAuth()
   remove(@Param('id') id: string) {
     return this.eventsService.remove(+id);
   }

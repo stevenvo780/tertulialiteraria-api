@@ -13,26 +13,31 @@ import { PublicationService } from './publication.service';
 import { CreatePublicationDto } from './dto/create-publication.dto';
 import { UpdatePublicationDto } from './dto/update-publication.dto';
 import { FirebaseAuthGuard } from '../auth/firebase-auth.guard';
+import { RolesGuard } from '../auth/roles.guard';
+import { Roles } from '../auth/roles.decorator';
+import { UserRole } from '../user/entities/user.entity';
 import { RequestWithUser } from '../auth/types';
-import {
-  ApiBearerAuth,
-  ApiTags,
-  ApiOperation,
-  ApiCreatedResponse,
-} from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
-@UseGuards(FirebaseAuthGuard)
-@ApiBearerAuth()
 @ApiTags('publications')
 @Controller('publications')
 export class PublicationController {
   constructor(private readonly publicationService: PublicationService) {}
 
-  @ApiOperation({ summary: 'Create a new publication' })
-  @ApiCreatedResponse({
-    description: 'The publication has been successfully created.',
-  })
+  @Get()
+  findAll() {
+    return this.publicationService.findAll();
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.publicationService.findOne(+id);
+  }
+
   @Post()
+  @UseGuards(FirebaseAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @ApiBearerAuth()
   create(
     @Request() req: RequestWithUser,
     @Body() createPublicationDto: CreatePublicationDto,
@@ -40,20 +45,10 @@ export class PublicationController {
     return this.publicationService.create(createPublicationDto, req.user);
   }
 
-  @ApiOperation({ summary: 'Get all publications' })
-  @Get()
-  findAll(@Request() req: RequestWithUser) {
-    return this.publicationService.findAll(req.user);
-  }
-
-  @ApiOperation({ summary: 'Get a publication by ID' })
-  @Get(':id')
-  findOne(@Request() req: RequestWithUser, @Param('id') id: string) {
-    return this.publicationService.findOne(+id, req.user);
-  }
-
-  @ApiOperation({ summary: 'Update a publication by ID' })
   @Patch(':id')
+  @UseGuards(FirebaseAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @ApiBearerAuth()
   update(
     @Param('id') id: string,
     @Body() updatePublicationDto: UpdatePublicationDto,
@@ -61,8 +56,10 @@ export class PublicationController {
     return this.publicationService.update(+id, updatePublicationDto);
   }
 
-  @ApiOperation({ summary: 'Delete a publication by ID' })
   @Delete(':id')
+  @UseGuards(FirebaseAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @ApiBearerAuth()
   remove(@Param('id') id: string) {
     return this.publicationService.remove(+id);
   }
