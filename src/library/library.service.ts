@@ -22,17 +22,21 @@ export class LibraryService {
       const parentNote = await this.libraryRepository.findOne({
         where: { id: createLibraryDto.parentNoteId, author: { id: user.id } },
       });
-      newLibraryItem.parent = parentNote;
+      if (parentNote) {
+        newLibraryItem.parent = parentNote;
+      }
     }
 
     return this.libraryRepository.save(newLibraryItem);
   }
 
   findAll(user: User) {
-    return this.libraryRepository.find({
-      where: { author: { id: user.id }, parent: null },
-      relations: ['children'],
-    });
+    return this.libraryRepository
+      .createQueryBuilder('library')
+      .leftJoinAndSelect('library.children', 'children')
+      .where('library.authorId = :userId', { userId: user.id })
+      .andWhere('library.parent IS NULL')
+      .getMany();
   }
 
   findOne(id: number, user: User) {
@@ -44,6 +48,9 @@ export class LibraryService {
 
   async update(id: number, updateLibraryDto: UpdateLibraryDto) {
     const libraryItem = await this.libraryRepository.findOne({ where: { id } });
+    if (!libraryItem) {
+      throw new Error('Nota no encontrada');
+    }
     Object.assign(libraryItem, updateLibraryDto);
     return this.libraryRepository.save(libraryItem);
   }
