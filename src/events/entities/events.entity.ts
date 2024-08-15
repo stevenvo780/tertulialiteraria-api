@@ -22,6 +22,12 @@ export class Events {
   @Column()
   eventDate: Date;
 
+  @Column()
+  startDate: Date;
+
+  @Column()
+  endDate: Date;
+
   @ManyToOne(() => User)
   @JoinColumn()
   @Index()

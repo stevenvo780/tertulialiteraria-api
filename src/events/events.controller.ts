@@ -42,14 +42,14 @@ export class EventsController {
 
   @ApiOperation({ summary: 'Get all events' })
   @Get()
-  findAll(@Request() req: RequestWithUser) {
-    return this.eventsService.findAll(req.user);
+  findAll() {
+    return this.eventsService.findAll();
   }
 
   @ApiOperation({ summary: 'Get an event by ID' })
   @Get(':id')
   findOne(@Request() req: RequestWithUser, @Param('id') id: string) {
-    return this.eventsService.findOne(+id, req.user);
+    return this.eventsService.findOne(+id);
   }
 
   @ApiOperation({ summary: 'Update an event by ID' })

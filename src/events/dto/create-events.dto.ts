@@ -3,17 +3,28 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateEventsDto {
   @IsString()
-  @ApiProperty({ description: 'The title of the event', type: String })
+  @ApiProperty({ description: 'El título del evento', type: String })
   title: string;
 
   @IsJSON()
   @ApiProperty({
-    description: 'The JSON object describing the event',
+    description: 'El objeto JSON que describe el evento',
     type: Object,
   })
   description: object;
 
   @IsDate()
-  @ApiProperty({ description: 'The date of the event', type: Date })
+  @ApiProperty({ description: 'La fecha del evento', type: Date })
   eventDate: Date;
+
+  @IsDate()
+  @ApiProperty({
+    description: 'La fecha y hora de inicio del evento',
+    type: Date,
+  })
+  startDate: Date;
+
+  @IsDate()
+  @ApiProperty({ description: 'La fecha y hora de fin del evento', type: Date })
+  endDate: Date;
 }
