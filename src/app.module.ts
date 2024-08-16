@@ -39,10 +39,6 @@ import { RolesGuard } from './auth/roles.guard';
     AppProvider,
     {
       provide: APP_GUARD,
-      useClass: FirebaseAuthGuard,
-    },
-    {
-      provide: APP_GUARD,
       useClass: RolesGuard,
     },
   ],
