@@ -88,7 +88,6 @@ export class LibraryController {
   })
   @Get('view/search')
   search(@Query('query') query?: string) {
-    console.log(query);
     return this.libraryService.search(query);
   }
 }

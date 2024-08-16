@@ -32,11 +32,59 @@ export class EventsService {
   }
 
   async findUpcomingEvents(limit: number): Promise<Events[]> {
-    return this.eventsRepository.find({
-      where: { startDate: MoreThan(new Date()) },
+    const now = new Date();
+    const events = await this.eventsRepository.find({
+      where: [
+        { startDate: MoreThan(now) },
+        { repetition: 'weekly' },
+        { repetition: 'monthly' },
+        { repetition: 'yearly' },
+      ],
       order: { startDate: 'ASC' },
-      take: limit,
     });
+
+    const upcomingEvents = events.flatMap((event) =>
+      this.calculateUpcomingOccurrences(event, now),
+    );
+
+    upcomingEvents.sort(
+      (a, b) => a.nextOccurrence.getTime() - b.nextOccurrence.getTime(),
+    );
+
+    return upcomingEvents.slice(0, limit).map((e) => e.event);
+  }
+
+  private calculateUpcomingOccurrences(event: Events, referenceDate: Date) {
+    const occurrences = [];
+    let nextDate = new Date(event.startDate);
+
+    while (nextDate < referenceDate) {
+      nextDate = this.calculateNextOccurrence(nextDate, event.repetition);
+    }
+
+    if (nextDate >= referenceDate) {
+      occurrences.push({ event, nextOccurrence: nextDate });
+    }
+
+    return occurrences;
+  }
+
+  private calculateNextOccurrence(currentDate: Date, repetition: string): Date {
+    const nextDate = new Date(currentDate);
+
+    switch (repetition) {
+      case 'weekly':
+        nextDate.setDate(nextDate.getDate() + 7);
+        break;
+      case 'monthly':
+        nextDate.setMonth(nextDate.getMonth() + 1);
+        break;
+      case 'yearly':
+        nextDate.setFullYear(nextDate.getFullYear() + 1);
+        break;
+    }
+
+    return nextDate;
   }
 
   async update(id: number, updateEventsDto: UpdateEventsDto) {
