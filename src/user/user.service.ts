@@ -20,7 +20,7 @@ export class UserService {
     return this.userRepository.find();
   }
 
-  findOne(id: number) {
+  findOne(id: string) {
     return this.userRepository.findOne({ where: { id } });
   }
 
@@ -30,11 +30,11 @@ export class UserService {
     });
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
+  update(id: string, updateUserDto: UpdateUserDto) {
     return this.userRepository.update(id, updateUserDto);
   }
 
-  remove(id: number) {
+  remove(id: string) {
     return this.userRepository.delete(id);
   }
 }

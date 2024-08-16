@@ -1,58 +1,21 @@
-import {
-  Injectable,
-  ConflictException,
-  NotFoundException,
-  UnauthorizedException,
-} from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { UserService } from '../user/user.service';
-import * as bcrypt from 'bcryptjs';
-import { LoginDto } from './dto/login.dto';
+import { Injectable, ConflictException } from '@nestjs/common';
+import admin from '../utils/firebase-admin.config';
 import { RegisterUserDto } from './dto/register.dto';
 
 @Injectable()
 export class AuthService {
-  constructor(
-    private userService: UserService,
-    private jwtService: JwtService,
-  ) {}
-
-  async validateUser(email: string, pass: string): Promise<any> {
-    const user = await this.userService.findOneByEmail(email);
-    if (!user) throw new NotFoundException('Usuario no existe');
-    if (user && bcrypt.compareSync(pass, user.password)) {
-      return user;
-    }
-    throw new UnauthorizedException('Contraseña invalida');
-  }
-
-  async login(user: LoginDto) {
-    const validatedUser = await this.validateUser(user.email, user.password);
-    if (validatedUser) {
-      const payload = { email: validatedUser.email, sub: validatedUser.id };
-      const userData = await this.userService.findOneByEmail(
-        validatedUser.email,
-      );
-      return {
-        userData,
-        access_token: this.jwtService.sign(payload),
-      };
-    }
-    throw new ConflictException('Error al validar');
-  }
-
   async register(user: RegisterUserDto) {
-    const userExist = await this.userService.findOneByEmail(user.email);
-    if (userExist) {
-      throw new ConflictException('El usuario ya existe');
+    try {
+      const newUser = await admin.auth().createUser({
+        email: user.email,
+        password: user.password,
+      });
+      return newUser;
+    } catch (error) {
+      if (error.code === 'auth/email-already-exists') {
+        throw new ConflictException('El correo electrónico ya está registrado');
+      }
+      throw new Error(error.message);
     }
-    const hashedPassword = bcrypt.hashSync(user.password, 8);
-    user.password = hashedPassword;
-    await this.userService.create(user);
-    const userLogin = await this.login({
-      email: user.email,
-      password: user.password,
-    });
-    return userLogin;
   }
 }

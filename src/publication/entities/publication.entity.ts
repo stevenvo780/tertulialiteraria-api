@@ -9,7 +9,7 @@ import {
 import { User } from '../../user/entities/user.entity';
 
 @Entity()
-export class Events {
+export class Publication {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -17,16 +17,13 @@ export class Events {
   title: string;
 
   @Column('json')
-  description: object;
+  content: {
+    html: string;
+    css: string;
+  };
 
   @Column()
-  startDate: Date;
-
-  @Column()
-  endDate: Date;
-
-  @Column({ nullable: true })
-  repetition?: string;
+  publicationDate: Date;
 
   @ManyToOne(() => User)
   @JoinColumn()
