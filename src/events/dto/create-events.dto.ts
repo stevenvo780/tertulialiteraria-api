@@ -1,4 +1,4 @@
-import { IsString, IsDate, IsJSON } from 'class-validator';
+import { IsString, IsDate, IsJSON, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateEventsDto {
@@ -14,10 +14,6 @@ export class CreateEventsDto {
   description: object;
 
   @IsDate()
-  @ApiProperty({ description: 'La fecha del evento', type: Date })
-  eventDate: Date;
-
-  @IsDate()
   @ApiProperty({
     description: 'La fecha y hora de inicio del evento',
     type: Date,
@@ -27,4 +23,12 @@ export class CreateEventsDto {
   @IsDate()
   @ApiProperty({ description: 'La fecha y hora de fin del evento', type: Date })
   endDate: Date;
+
+  @IsString()
+  @IsOptional()
+  @ApiProperty({
+    description: 'La repetición del evento (none, weekly, monthly, yearly)',
+    type: String,
+  })
+  repetition?: string;
 }

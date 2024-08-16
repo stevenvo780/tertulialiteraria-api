@@ -29,7 +29,7 @@ import { RequestWithUser } from '../auth/types';
 @ApiBearerAuth()
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) { }
+  constructor(private readonly userService: UserService) {}
 
   // Rutas accesibles solo para administradores
   @UseGuards(FirebaseAuthGuard, RolesGuard)
@@ -57,7 +57,6 @@ export class UserController {
   @ApiOkResponse({ description: 'Return the authenticated user.', type: User })
   @Get('me/data')
   getMe(@Request() req: RequestWithUser) {
-    console.log(req);
     return req.user;
   }
 

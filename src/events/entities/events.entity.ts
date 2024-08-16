@@ -20,13 +20,13 @@ export class Events {
   description: object;
 
   @Column()
-  eventDate: Date;
-
-  @Column()
   startDate: Date;
 
   @Column()
   endDate: Date;
+
+  @Column({ nullable: true })
+  repetition?: string;
 
   @ManyToOne(() => User)
   @JoinColumn()

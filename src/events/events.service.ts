@@ -12,11 +12,14 @@ export class EventsService {
     @InjectRepository(Events)
     private eventsRepository: Repository<Events>,
   ) {}
+
   async create(createEventsDto: CreateEventsDto, user: User) {
-    const dataEvent = new Events();
-    Object.assign(dataEvent, createEventsDto);
-    dataEvent.author = user;
-    return this.eventsRepository.save(dataEvent);
+    console.log('createEventsDto', createEventsDto);
+    const baseEvent = new Events();
+    Object.assign(baseEvent, createEventsDto);
+    baseEvent.author = user;
+
+    return this.eventsRepository.save(baseEvent);
   }
 
   findAll() {
