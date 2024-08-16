@@ -7,10 +7,11 @@ import {
   JoinColumn,
   OneToMany,
 } from 'typeorm';
+import { SharedProp } from '../../common/entities/sharedProp.helper';
 import { User } from '../../user/entities/user.entity';
 
 @Entity()
-export class Library {
+export class Library extends SharedProp {
   @PrimaryGeneratedColumn()
   id: number;
 

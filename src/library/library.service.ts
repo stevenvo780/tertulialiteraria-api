@@ -45,6 +45,14 @@ export class LibraryService {
     });
   }
 
+  async findLatest(limit: number): Promise<Library[]> {
+    console.log('findLatest');
+    return this.libraryRepository.find({
+      order: { createdAt: 'DESC' },
+      take: limit,
+    });
+  }
+
   async update(id: number, updateLibraryDto: UpdateLibraryDto) {
     const libraryItem = await this.libraryRepository.findOne({ where: { id } });
     if (!libraryItem) {

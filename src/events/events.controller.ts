@@ -77,8 +77,9 @@ export class EventsController {
   }
 
   @ApiOperation({ summary: 'Get upcoming events' })
-  @Get('upcoming')
-  findUpcomingEvents(@Query('limit') limit: number): Promise<Events[]> {
-    return this.eventsService.findUpcomingEvents(limit) as Promise<Events[]>;
+  @Get('home/upcoming')
+  findUpcomingEvents(@Query('limit') limit: string): Promise<Events[]> {
+    const parsedLimit = parseInt(limit, 10);
+    return this.eventsService.findUpcomingEvents(parsedLimit) as Promise<Events[]>;
   }
 }

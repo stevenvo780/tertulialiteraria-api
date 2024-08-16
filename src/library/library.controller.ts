@@ -8,6 +8,7 @@ import {
   Delete,
   UseGuards,
   Request,
+  Query,
 } from '@nestjs/common';
 import { LibraryService } from './library.service';
 import { CreateLibraryDto } from './dto/create-library.dto';
@@ -23,6 +24,7 @@ import {
   ApiOperation,
   ApiCreatedResponse,
 } from '@nestjs/swagger';
+import { Library } from './entities/library.entity';
 
 @ApiTags('library')
 @Controller('library')
@@ -72,5 +74,12 @@ export class LibraryController {
   @ApiBearerAuth()
   remove(@Param('id') id: string) {
     return this.libraryService.remove(+id);
+  }
+
+  @ApiOperation({ summary: 'Get latest library references' })
+  @Get('home/latest')
+  findLatest(@Query('limit') limit: string): Promise<Library[]> {
+    const parsedLimit = parseInt(limit, 10);
+    return this.libraryService.findLatest(parsedLimit);
   }
 }
