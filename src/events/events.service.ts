@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, MoreThan } from 'typeorm';
 import { Events } from './entities/events.entity';
 import { User } from '../user/entities/user.entity';
 import { CreateEventsDto } from './dto/create-events.dto';
@@ -14,7 +14,6 @@ export class EventsService {
   ) {}
 
   async create(createEventsDto: CreateEventsDto, user: User) {
-    console.log('createEventsDto', createEventsDto);
     const baseEvent = new Events();
     Object.assign(baseEvent, createEventsDto);
     baseEvent.author = user;
@@ -29,6 +28,14 @@ export class EventsService {
   findOne(id: number) {
     return this.eventsRepository.findOne({
       where: { id },
+    });
+  }
+
+  async findUpcomingEvents(limit: number): Promise<Events[]> {
+    return this.eventsRepository.find({
+      where: { startDate: MoreThan(new Date()) },
+      order: { startDate: 'ASC' },
+      take: limit,
     });
   }
 

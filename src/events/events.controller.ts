@@ -8,6 +8,7 @@ import {
   Delete,
   UseGuards,
   Request,
+  Query,
 } from '@nestjs/common';
 import { EventsService } from './events.service';
 import { CreateEventsDto } from './dto/create-events.dto';
@@ -23,6 +24,7 @@ import {
   ApiOperation,
   ApiCreatedResponse,
 } from '@nestjs/swagger';
+import { Events } from './entities/events.entity';
 
 @ApiTags('events')
 @Controller('events')
@@ -72,5 +74,11 @@ export class EventsController {
   @ApiBearerAuth()
   remove(@Param('id') id: string) {
     return this.eventsService.remove(+id);
+  }
+
+  @ApiOperation({ summary: 'Get upcoming events' })
+  @Get('upcoming')
+  findUpcomingEvents(@Query('limit') limit: number): Promise<Events[]> {
+    return this.eventsService.findUpcomingEvents(limit) as Promise<Events[]>;
   }
 }
