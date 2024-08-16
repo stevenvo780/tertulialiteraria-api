@@ -46,7 +46,6 @@ export class LibraryService {
   }
 
   async findLatest(limit: number): Promise<Library[]> {
-    console.log('findLatest');
     return this.libraryRepository.find({
       order: { createdAt: 'DESC' },
       take: limit,

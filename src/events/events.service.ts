@@ -32,7 +32,6 @@ export class EventsService {
   }
 
   async findUpcomingEvents(limit: number): Promise<Events[]> {
-    console.log('findUpcomingEvents');
     return this.eventsRepository.find({
       where: { startDate: MoreThan(new Date()) },
       order: { startDate: 'ASC' },
