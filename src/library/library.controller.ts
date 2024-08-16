@@ -82,4 +82,12 @@ export class LibraryController {
     const parsedLimit = parseInt(limit, 10);
     return this.libraryService.findLatest(parsedLimit);
   }
+
+  @ApiOperation({
+    summary: 'Search library references by title and/or description',
+  })
+  @Get('view/search')
+  search(@Query('query') query?: string) {
+    return this.libraryService.search(query);
+  }
 }

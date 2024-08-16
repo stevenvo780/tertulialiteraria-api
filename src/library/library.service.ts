@@ -64,4 +64,16 @@ export class LibraryService {
   remove(id: number) {
     return this.libraryRepository.delete(id);
   }
+
+  async search(query?: string): Promise<Library[]> {
+    const searchQuery = this.libraryRepository.createQueryBuilder('library');
+
+    if (query) {
+      searchQuery
+        .where('library.title LIKE :query', { query: `%${query}%` })
+        .orWhere('library.description LIKE :query', { query: `%${query}%` });
+    }
+
+    return searchQuery.getMany();
+  }
 }
