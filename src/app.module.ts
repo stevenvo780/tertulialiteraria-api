@@ -1,5 +1,4 @@
 import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
-import { APP_GUARD } from '@nestjs/core';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { EventsModule } from './events/events.module';
@@ -11,8 +10,6 @@ import { LoggerMiddleware } from './logger.middleware';
 import AppProvider from './app.provider';
 import { LibraryModule } from './library/library.module';
 import { PublicationModule } from './publication/publication.module';
-import { FirebaseAuthGuard } from './auth/firebase-auth.guard';
-import { RolesGuard } from './auth/roles.guard';
 
 @Module({
   imports: [
@@ -34,14 +31,7 @@ import { RolesGuard } from './auth/roles.guard';
     LibraryModule,
   ],
   controllers: [AppController],
-  providers: [
-    AppService,
-    AppProvider,
-    {
-      provide: APP_GUARD,
-      useClass: RolesGuard,
-    },
-  ],
+  providers: [AppService, AppProvider],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
