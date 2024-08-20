@@ -1,8 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, ForbiddenException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Library } from './entities/library.entity';
-import { User } from '../user/entities/user.entity';
+import { Library, LibraryVisibility } from './entities/library.entity';
+import { User, UserRole } from '../user/entities/user.entity';
 import { CreateLibraryDto } from './dto/create-library.dto';
 import { UpdateLibraryDto } from './dto/update-library.dto';
 
@@ -30,33 +30,90 @@ export class LibraryService {
     return this.libraryRepository.save(newLibraryItem);
   }
 
-  findAll() {
-    return this.libraryRepository
+  findAll(user?: User) {
+    let query = this.libraryRepository
       .createQueryBuilder('library')
       .leftJoinAndSelect('library.children', 'children')
-      .where('library.parent IS NULL')
-      .getMany();
-  }
+      .where('library.parent IS NULL');
 
-  findOne(id: number) {
-    return this.libraryRepository.findOne({
-      where: { id },
-      relations: ['children'],
-    });
-  }
-
-  async findLatest(limit: number): Promise<Library[]> {
-    return this.libraryRepository.find({
-      order: { createdAt: 'DESC' },
-      take: limit,
-    });
-  }
-
-  async update(id: number, updateLibraryDto: UpdateLibraryDto) {
-    const libraryItem = await this.libraryRepository.findOne({ where: { id } });
-    if (!libraryItem) {
-      throw new Error('Nota no encontrada');
+    if (user) {
+      if (user.role === UserRole.USER) {
+        query = query.andWhere('library.visibility IN (:...visibilities)', {
+          visibilities: [LibraryVisibility.GENERAL, LibraryVisibility.USERS],
+        });
+      } else if (user.role === UserRole.ADMIN) {
+        query = query.andWhere('library.visibility IN (:...visibilities)', {
+          visibilities: [
+            LibraryVisibility.GENERAL,
+            LibraryVisibility.USERS,
+            LibraryVisibility.ADMIN,
+          ],
+        });
+      }
+    } else {
+      query = query.andWhere('library.visibility = :visibility', {
+        visibility: LibraryVisibility.GENERAL,
+      });
     }
+
+    return query.getMany();
+  }
+
+  findOne(id: number, user?: User) {
+    return this.libraryRepository
+      .findOne({
+        where: { id },
+        relations: ['children'],
+      })
+      .then((library) => {
+        if (!library) throw new Error('Nota no encontrada');
+
+        if (
+          (library.visibility === LibraryVisibility.ADMIN &&
+            (!user || user.role !== UserRole.ADMIN)) ||
+          (library.visibility === LibraryVisibility.USERS &&
+            (!user || user.role === UserRole.USER))
+        ) {
+          throw new ForbiddenException('No tienes acceso a esta nota');
+        }
+
+        return library;
+      });
+  }
+
+  async findLatest(limit: number, user?: User): Promise<Library[]> {
+    let query = this.libraryRepository
+      .createQueryBuilder('library')
+      .orderBy('library.createdAt', 'DESC')
+      .take(limit);
+
+    if (user) {
+      if (user.role === UserRole.USER) {
+        query = query.andWhere('library.visibility IN (:...visibilities)', {
+          visibilities: [LibraryVisibility.GENERAL, LibraryVisibility.USERS],
+        });
+      } else if (user.role === UserRole.ADMIN) {
+        query = query.andWhere('library.visibility IN (:...visibilities)', {
+          visibilities: [
+            LibraryVisibility.GENERAL,
+            LibraryVisibility.USERS,
+            LibraryVisibility.ADMIN,
+          ],
+        });
+      }
+    } else {
+      query = query.andWhere('library.visibility = :visibility', {
+        visibility: LibraryVisibility.GENERAL,
+      });
+    }
+
+    return query.getMany();
+  }
+
+  async update(id: number, updateLibraryDto: UpdateLibraryDto, user: User) {
+    const libraryItem = await this.findOne(id, user);
+    if (!libraryItem) throw new Error('Nota no encontrada');
+
     Object.assign(libraryItem, updateLibraryDto);
     return this.libraryRepository.save(libraryItem);
   }
@@ -65,14 +122,38 @@ export class LibraryService {
     return this.libraryRepository.delete(id);
   }
 
-  async search(query?: string): Promise<Library[]> {
-    const searchQuery = this.libraryRepository.createQueryBuilder('library');
+  async search(query: string, user?: User): Promise<Library[]> {
+    let searchQuery = this.libraryRepository.createQueryBuilder('library');
 
-    if (query) {
-      searchQuery
-        .where('library.title LIKE :query', { query: `%${query}%` })
-        .orWhere('library.description LIKE :query', { query: `%${query}%` });
+    if (user) {
+      if (user.role === UserRole.USER) {
+        searchQuery = searchQuery.andWhere(
+          'library.visibility IN (:...visibilities)',
+          {
+            visibilities: [LibraryVisibility.GENERAL, LibraryVisibility.USERS],
+          },
+        );
+      } else if (user.role === UserRole.ADMIN) {
+        searchQuery = searchQuery.andWhere(
+          'library.visibility IN (:...visibilities)',
+          {
+            visibilities: [
+              LibraryVisibility.GENERAL,
+              LibraryVisibility.USERS,
+              LibraryVisibility.ADMIN,
+            ],
+          },
+        );
+      }
+    } else {
+      searchQuery = searchQuery.andWhere('library.visibility = :visibility', {
+        visibility: LibraryVisibility.GENERAL,
+      });
     }
+
+    searchQuery
+      .andWhere('library.title LIKE :query', { query: `%${query}%` })
+      .orWhere('library.description LIKE :query', { query: `%${query}%` });
 
     return searchQuery.getMany();
   }

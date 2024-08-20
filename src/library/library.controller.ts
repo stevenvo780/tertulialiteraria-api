@@ -14,6 +14,7 @@ import { LibraryService } from './library.service';
 import { CreateLibraryDto } from './dto/create-library.dto';
 import { UpdateLibraryDto } from './dto/update-library.dto';
 import { FirebaseAuthGuard } from '../auth/firebase-auth.guard';
+import { OptionalFirebaseAuthGuard } from '../auth/optional-firebase-auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
 import { UserRole } from '../user/entities/user.entity';
@@ -33,14 +34,16 @@ export class LibraryController {
 
   @ApiOperation({ summary: 'Get all library references' })
   @Get()
-  findAll() {
-    return this.libraryService.findAll();
+  @UseGuards(OptionalFirebaseAuthGuard)
+  findAll(@Request() req: RequestWithUser) {
+    return this.libraryService.findAll(req.user);
   }
 
   @ApiOperation({ summary: 'Get a library reference by ID' })
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.libraryService.findOne(+id);
+  @UseGuards(OptionalFirebaseAuthGuard)
+  findOne(@Param('id') id: string, @Request() req: RequestWithUser) {
+    return this.libraryService.findOne(+id, req.user);
   }
 
   @ApiOperation({ summary: 'Create a new library reference' })
@@ -63,8 +66,12 @@ export class LibraryController {
   @UseGuards(FirebaseAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   @ApiBearerAuth()
-  update(@Param('id') id: string, @Body() updateLibraryDto: UpdateLibraryDto) {
-    return this.libraryService.update(+id, updateLibraryDto);
+  update(
+    @Request() req: RequestWithUser,
+    @Param('id') id: string,
+    @Body() updateLibraryDto: UpdateLibraryDto,
+  ) {
+    return this.libraryService.update(+id, updateLibraryDto, req.user);
   }
 
   @ApiOperation({ summary: 'Delete a library reference by ID' })
@@ -78,16 +85,21 @@ export class LibraryController {
 
   @ApiOperation({ summary: 'Get latest library references' })
   @Get('home/latest')
-  findLatest(@Query('limit') limit: string): Promise<Library[]> {
+  @UseGuards(OptionalFirebaseAuthGuard)
+  findLatest(
+    @Query('limit') limit: string,
+    @Request() req: RequestWithUser,
+  ): Promise<Library[]> {
     const parsedLimit = parseInt(limit, 10);
-    return this.libraryService.findLatest(parsedLimit);
+    return this.libraryService.findLatest(parsedLimit, req.user);
   }
 
   @ApiOperation({
     summary: 'Search library references by title and/or description',
   })
   @Get('view/search')
-  search(@Query('query') query?: string) {
-    return this.libraryService.search(query);
+  @UseGuards(OptionalFirebaseAuthGuard)
+  search(@Request() req: RequestWithUser, @Query('query') query?: string) {
+    return this.libraryService.search(query, req.user);
   }
 }
