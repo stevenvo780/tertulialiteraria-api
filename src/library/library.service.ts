@@ -41,7 +41,10 @@ export class LibraryService {
         query = query.andWhere('library.visibility IN (:...visibilities)', {
           visibilities: [LibraryVisibility.GENERAL, LibraryVisibility.USERS],
         });
-      } else if (user.role === UserRole.ADMIN) {
+      } else if (
+        user.role === UserRole.ADMIN ||
+        user.role === UserRole.SUPER_ADMIN
+      ) {
         query = query.andWhere('library.visibility IN (:...visibilities)', {
           visibilities: [
             LibraryVisibility.GENERAL,
@@ -70,7 +73,9 @@ export class LibraryService {
 
         if (
           (library.visibility === LibraryVisibility.ADMIN &&
-            (!user || user.role !== UserRole.ADMIN)) ||
+            (!user ||
+              (user.role !== UserRole.ADMIN &&
+                user.role !== UserRole.SUPER_ADMIN))) ||
           (library.visibility === LibraryVisibility.USERS &&
             (!user || user.role === UserRole.USER))
         ) {
@@ -92,7 +97,10 @@ export class LibraryService {
         query = query.andWhere('library.visibility IN (:...visibilities)', {
           visibilities: [LibraryVisibility.GENERAL, LibraryVisibility.USERS],
         });
-      } else if (user.role === UserRole.ADMIN) {
+      } else if (
+        user.role === UserRole.ADMIN ||
+        user.role === UserRole.SUPER_ADMIN
+      ) {
         query = query.andWhere('library.visibility IN (:...visibilities)', {
           visibilities: [
             LibraryVisibility.GENERAL,
@@ -133,7 +141,10 @@ export class LibraryService {
             visibilities: [LibraryVisibility.GENERAL, LibraryVisibility.USERS],
           },
         );
-      } else if (user.role === UserRole.ADMIN) {
+      } else if (
+        user.role === UserRole.ADMIN ||
+        user.role === UserRole.SUPER_ADMIN
+      ) {
         searchQuery = searchQuery.andWhere(
           'library.visibility IN (:...visibilities)',
           {
