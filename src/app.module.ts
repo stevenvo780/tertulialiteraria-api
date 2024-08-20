@@ -10,6 +10,7 @@ import { LoggerMiddleware } from './logger.middleware';
 import AppProvider from './app.provider';
 import { LibraryModule } from './library/library.module';
 import { PublicationModule } from './publication/publication.module';
+import { ConfigAppModule } from './config/config.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { PublicationModule } from './publication/publication.module';
     UserModule,
     PublicationModule,
     LibraryModule,
+    ConfigAppModule,
   ],
   controllers: [AppController],
   providers: [AppService, AppProvider],
