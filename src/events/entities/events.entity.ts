@@ -9,6 +9,14 @@ import {
 import { User } from '../../user/entities/user.entity';
 import { ApiProperty } from '@nestjs/swagger';
 
+export enum Repetition {
+  NONE = 'none',
+  DAILY = 'daily',
+  WEEKLY = 'weekly',
+  MONTHLY = 'monthly',
+  YEARLY = 'yearly',
+}
+
 @Entity()
 export class Events {
   @PrimaryGeneratedColumn()
@@ -51,14 +59,14 @@ export class Events {
   })
   endDate: Date;
 
-  @Column({ nullable: true })
+  @Column({ type: 'enum', enum: Repetition, default: Repetition.NONE })
   @ApiProperty({
     description: 'Cadena que describe la repetición del evento (si aplica)',
-    type: String,
+    enum: Repetition,
     required: false,
     example: 'weekly',
   })
-  repetition?: string;
+  repetition: Repetition;
 
   @ManyToOne(() => User)
   @JoinColumn()
