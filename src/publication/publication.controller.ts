@@ -36,7 +36,7 @@ export class PublicationController {
 
   @Post()
   @UseGuards(FirebaseAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
+  @Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN)
   @ApiBearerAuth()
   create(
     @Request() req: RequestWithUser,
@@ -47,7 +47,7 @@ export class PublicationController {
 
   @Patch(':id')
   @UseGuards(FirebaseAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
+  @Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN)
   @ApiBearerAuth()
   update(
     @Param('id') id: string,
@@ -58,7 +58,7 @@ export class PublicationController {
 
   @Delete(':id')
   @UseGuards(FirebaseAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
+  @Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN)
   @ApiBearerAuth()
   remove(@Param('id') id: string) {
     return this.publicationService.remove(+id);

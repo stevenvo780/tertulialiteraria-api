@@ -37,6 +37,12 @@ export class EventsController {
     return this.eventsService.findAll();
   }
 
+  @ApiOperation({ summary: 'Get all unique events' })
+  @Get('/home/unique')
+  findUniqueEvents(@Query('limit') limit: string): Promise<Events[]> {
+    return this.eventsService.findUniqueEvents(Number(limit));
+  }
+
   @ApiOperation({ summary: 'Get an event by ID' })
   @Get(':id')
   findOne(@Param('id') id: string) {
@@ -49,7 +55,7 @@ export class EventsController {
   })
   @Post()
   @UseGuards(FirebaseAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
+  @Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN)
   @ApiBearerAuth()
   create(
     @Request() req: RequestWithUser,
@@ -61,7 +67,7 @@ export class EventsController {
   @ApiOperation({ summary: 'Update an event by ID' })
   @Patch(':id')
   @UseGuards(FirebaseAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
+  @Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN)
   @ApiBearerAuth()
   update(@Param('id') id: string, @Body() updateEventsDto: UpdateEventsDto) {
     return this.eventsService.update(+id, updateEventsDto);
@@ -70,7 +76,7 @@ export class EventsController {
   @ApiOperation({ summary: 'Delete an event by ID' })
   @Delete(':id')
   @UseGuards(FirebaseAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
+  @Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN)
   @ApiBearerAuth()
   remove(@Param('id') id: string) {
     return this.eventsService.remove(+id);
@@ -80,6 +86,8 @@ export class EventsController {
   @Get('home/upcoming')
   findUpcomingEvents(@Query('limit') limit: string): Promise<Events[]> {
     const parsedLimit = parseInt(limit, 10);
-    return this.eventsService.findUpcomingEvents(parsedLimit) as Promise<Events[]>;
+    return this.eventsService.findUpcomingEvents(parsedLimit) as Promise<
+      Events[]
+    >;
   }
 }

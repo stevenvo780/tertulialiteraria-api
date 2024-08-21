@@ -52,7 +52,7 @@ export class LibraryController {
   })
   @Post()
   @UseGuards(FirebaseAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
+  @Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN)
   @ApiBearerAuth()
   create(
     @Request() req: RequestWithUser,
@@ -64,7 +64,7 @@ export class LibraryController {
   @ApiOperation({ summary: 'Update a library reference by ID' })
   @Patch(':id')
   @UseGuards(FirebaseAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
+  @Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN)
   @ApiBearerAuth()
   update(
     @Request() req: RequestWithUser,
@@ -77,7 +77,7 @@ export class LibraryController {
   @ApiOperation({ summary: 'Delete a library reference by ID' })
   @Delete(':id')
   @UseGuards(FirebaseAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
+  @Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN)
   @ApiBearerAuth()
   remove(@Param('id') id: string) {
     return this.libraryService.remove(+id);
