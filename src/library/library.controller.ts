@@ -63,7 +63,7 @@ export class LibraryController {
   })
   @Post()
   @UseGuards(FirebaseAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN)
+  @Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN, UserRole.EDITOR)
   @ApiBearerAuth()
   create(
     @Request() req: RequestWithUser,
@@ -76,7 +76,7 @@ export class LibraryController {
   @ApiOkResponse({ description: 'Library reference updated', type: Library })
   @Patch(':id')
   @UseGuards(FirebaseAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN)
+  @Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN, UserRole.EDITOR)
   @ApiBearerAuth()
   update(
     @Request() req: RequestWithUser,
@@ -93,10 +93,13 @@ export class LibraryController {
   })
   @Delete(':id')
   @UseGuards(FirebaseAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN)
+  @Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN, UserRole.EDITOR)
   @ApiBearerAuth()
-  remove(@Param('id') id: string): Promise<DeleteResult> {
-    return this.libraryService.remove(+id);
+  remove(
+    @Request() req: RequestWithUser,
+    @Param('id') id: string,
+  ): Promise<DeleteResult> {
+    return this.libraryService.remove(+id, req.user);
   }
 
   @ApiOperation({ summary: 'Get latest library references' })

@@ -8,9 +8,10 @@ import {
 } from 'typeorm';
 import { User } from '../../user/entities/user.entity';
 import { ApiProperty } from '@nestjs/swagger';
+import { SharedProp } from '../../common/entities/sharedProp.helper';
 
 @Entity()
-export class Publication {
+export class Publication extends SharedProp {
   @PrimaryGeneratedColumn()
   @ApiProperty({
     description: 'Identificador único de la publicación',
@@ -25,28 +26,13 @@ export class Publication {
   })
   title: string;
 
-  @Column('json')
+  @Column('text')
   @ApiProperty({
     description: 'Contenido de la publicación en formato JSON con HTML y CSS',
     type: 'object',
-    example: {
-      html: '<p>Contenido en HTML...</p>',
-      css: 'p { color: black; }',
-    },
+    example: '<h1>Publicación sobre filosofía moderna</h1>',
   })
-  content: {
-    html: string;
-    css: string;
-  };
-
-  @Column()
-  @ApiProperty({
-    description: 'Fecha de la publicación',
-    type: 'string',
-    format: 'date-time',
-    example: '2024-08-21T10:00:00Z',
-  })
-  publicationDate: Date;
+  content: string;
 
   @ManyToOne(() => User)
   @JoinColumn()

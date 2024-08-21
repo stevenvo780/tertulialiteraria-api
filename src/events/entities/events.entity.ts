@@ -8,9 +8,18 @@ import {
 } from 'typeorm';
 import { User } from '../../user/entities/user.entity';
 import { ApiProperty } from '@nestjs/swagger';
+import { SharedProp } from '../../common/entities/sharedProp.helper';
+
+export enum Repetition {
+  NONE = 'none',
+  DAILY = 'daily',
+  WEEKLY = 'weekly',
+  MONTHLY = 'monthly',
+  YEARLY = 'yearly',
+}
 
 @Entity()
-export class Events {
+export class Events extends SharedProp {
   @PrimaryGeneratedColumn()
   @ApiProperty({
     description: 'Identificador único del evento',
@@ -51,14 +60,14 @@ export class Events {
   })
   endDate: Date;
 
-  @Column({ nullable: true })
+  @Column({ type: 'enum', enum: Repetition, default: Repetition.NONE })
   @ApiProperty({
     description: 'Cadena que describe la repetición del evento (si aplica)',
-    type: String,
+    enum: Repetition,
     required: false,
     example: 'weekly',
   })
-  repetition?: string;
+  repetition: Repetition;
 
   @ManyToOne(() => User)
   @JoinColumn()

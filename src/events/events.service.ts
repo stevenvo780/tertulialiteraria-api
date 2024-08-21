@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, MoreThan, Not, DeleteResult } from 'typeorm';
-import { Events } from './entities/events.entity';
+import { Events, Repetition } from './entities/events.entity';
 import { User } from '../user/entities/user.entity';
 import { CreateEventsDto } from './dto/create-events.dto';
 import { UpdateEventsDto } from './dto/update-events.dto';
@@ -35,11 +35,9 @@ export class EventsService {
     const now = new Date();
     const events = await this.eventsRepository.find({
       where: [
-        { startDate: MoreThan(now) },
-        { repetition: 'weekly' },
-        { repetition: 'monthly' },
-        { repetition: 'yearly' },
-        { repetition: Not(null) },
+        { repetition: Repetition.WEEKLY },
+        { repetition: Repetition.MONTHLY },
+        { repetition: Repetition.YEARLY },
       ],
       order: { startDate: 'ASC' },
       take: limit,
@@ -58,7 +56,7 @@ export class EventsService {
 
   async findUniqueEvents(limit: number): Promise<Events[]> {
     const events = await this.eventsRepository.find({
-      where: { repetition: null },
+      where: { repetition: Repetition.NONE, startDate: MoreThan(new Date()) },
       order: { startDate: 'ASC' },
       take: limit,
     });

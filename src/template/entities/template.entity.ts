@@ -1,5 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
+import { SharedProp } from '../../common/entities/sharedProp.helper';
 
 export enum TemplateType {
   NOTES = 'Notes',
@@ -9,7 +10,7 @@ export enum TemplateType {
 }
 
 @Entity()
-export class Template {
+export class Template extends SharedProp {
   @PrimaryGeneratedColumn()
   @ApiProperty({
     description: 'Identificador único de la plantilla',

@@ -40,7 +40,7 @@ export class LibraryService {
       .where('library.parent IS NULL');
 
     if (user) {
-      if (user.role === UserRole.USER) {
+      if (user.role === UserRole.USER || user.role === UserRole.EDITOR) {
         query = query.andWhere('library.visibility IN (:...visibilities)', {
           visibilities: [LibraryVisibility.GENERAL, LibraryVisibility.USERS],
         });
@@ -93,7 +93,7 @@ export class LibraryService {
       .take(limit);
 
     if (user) {
-      if (user.role === UserRole.USER) {
+      if (user.role === UserRole.USER || user.role === UserRole.EDITOR) {
         query = query.andWhere('library.visibility IN (:...visibilities)', {
           visibilities: [LibraryVisibility.GENERAL, LibraryVisibility.USERS],
         });
@@ -126,11 +126,27 @@ export class LibraryService {
     const libraryItem = await this.findOne(id, user);
     if (!libraryItem) throw new Error('Nota no encontrada');
 
+    if (user.role === UserRole.EDITOR && libraryItem.author.id !== user.id) {
+      throw new ForbiddenException(
+        'No puedes editar una nota que no hayas creado',
+      );
+    }
+
     Object.assign(libraryItem, updateLibraryDto);
     return this.libraryRepository.save(libraryItem);
   }
 
-  remove(id: number): Promise<DeleteResult> {
+  async remove(id: number, user: User): Promise<DeleteResult> {
+    const libraryItem = await this.findOne(id, user);
+
+    if (!libraryItem) throw new Error('Nota no encontrada');
+
+    if (user.role === UserRole.EDITOR && libraryItem.author.id !== user.id) {
+      throw new ForbiddenException(
+        'No puedes eliminar una nota que no hayas creado',
+      );
+    }
+
     return this.libraryRepository.delete(id);
   }
 
@@ -138,7 +154,7 @@ export class LibraryService {
     let searchQuery = this.libraryRepository.createQueryBuilder('library');
 
     if (user) {
-      if (user.role === UserRole.USER) {
+      if (user.role === UserRole.USER || user.role === UserRole.EDITOR) {
         searchQuery = searchQuery.andWhere(
           'library.visibility IN (:...visibilities)',
           {
