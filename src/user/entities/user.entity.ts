@@ -1,7 +1,7 @@
-import { Entity, Column, PrimaryColumn, OneToMany } from 'typeorm';
-import { Events } from '../../events/entities/events.entity';
+import { Entity, Column, PrimaryColumn } from 'typeorm';
 
 export enum UserRole {
+  SUPER_ADMIN = 'super_admin',
   ADMIN = 'admin',
   USER = 'user',
 }
@@ -19,7 +19,4 @@ export class User {
 
   @Column({ type: 'enum', enum: UserRole, default: UserRole.USER })
   role: UserRole;
-
-  @OneToMany(() => Events, (events) => events.author)
-  events: Events[];
 }

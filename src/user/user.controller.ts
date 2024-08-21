@@ -4,12 +4,10 @@ import {
   Body,
   Patch,
   Param,
-  Delete,
   UseGuards,
   Request,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { FirebaseAuthGuard } from '../auth/firebase-auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
@@ -19,7 +17,6 @@ import {
   ApiOperation,
   ApiOkResponse,
   ApiNotFoundResponse,
-  ApiNoContentResponse,
   ApiBearerAuth,
 } from '@nestjs/swagger';
 import { User } from './entities/user.entity';
@@ -31,10 +28,9 @@ import { RequestWithUser } from '../auth/types';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  // Rutas accesibles solo para administradores
   @UseGuards(FirebaseAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
-  @ApiOperation({ summary: 'Get all users' })
+  @Roles(UserRole.SUPER_ADMIN)
+  @ApiOperation({ summary: 'Get all users (Super Admin only)' })
   @ApiOkResponse({ description: 'Return all users.', type: [User] })
   @Get()
   findAll() {
@@ -42,8 +38,8 @@ export class UserController {
   }
 
   @UseGuards(FirebaseAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
-  @ApiOperation({ summary: 'Get a user by ID' })
+  @Roles(UserRole.SUPER_ADMIN)
+  @ApiOperation({ summary: 'Get a user by ID (Super Admin only)' })
   @ApiOkResponse({ description: 'Return a user.', type: User })
   @ApiNotFoundResponse({ description: 'User not found.' })
   @Get(':id')
@@ -51,7 +47,6 @@ export class UserController {
     return this.userService.findOne(id);
   }
 
-  // Ruta accesible para cualquier usuario autenticado
   @UseGuards(FirebaseAuthGuard)
   @ApiOperation({ summary: 'Get the authenticated user' })
   @ApiOkResponse({ description: 'Return the authenticated user.', type: User })
@@ -60,26 +55,20 @@ export class UserController {
     return req.user;
   }
 
-  // Rutas accesibles solo para administradores
   @UseGuards(FirebaseAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
-  @ApiOperation({ summary: 'Update a user by ID' })
-  @ApiOkResponse({ description: 'The user has been successfully updated.' })
-  @ApiNotFoundResponse({ description: 'User not found.' })
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.userService.update(id, updateUserDto);
-  }
-
-  @UseGuards(FirebaseAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
-  @ApiOperation({ summary: 'Delete a user by ID' })
-  @ApiNoContentResponse({
-    description: 'The user has been successfully deleted.',
+  @Roles(UserRole.SUPER_ADMIN)
+  @ApiOperation({
+    summary: 'Update the role of a user by ID (Super Admin only)',
+  })
+  @ApiOkResponse({
+    description: 'The user role has been successfully updated.',
   })
   @ApiNotFoundResponse({ description: 'User not found.' })
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.userService.remove(id);
+  @Patch(':id')
+  updateRole(
+    @Param('id') id: string,
+    @Body() updateUserDto: Partial<Pick<User, 'role'>>,
+  ) {
+    return this.userService.updateRole(id, updateUserDto.role);
   }
 }

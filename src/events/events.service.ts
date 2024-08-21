@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, MoreThan } from 'typeorm';
+import { Repository, MoreThan, Not } from 'typeorm';
 import { Events } from './entities/events.entity';
 import { User } from '../user/entities/user.entity';
 import { CreateEventsDto } from './dto/create-events.dto';
@@ -39,8 +39,10 @@ export class EventsService {
         { repetition: 'weekly' },
         { repetition: 'monthly' },
         { repetition: 'yearly' },
+        { repetition: Not(null) },
       ],
       order: { startDate: 'ASC' },
+      take: limit,
     });
 
     const upcomingEvents = events.flatMap((event) =>
@@ -51,7 +53,17 @@ export class EventsService {
       (a, b) => a.nextOccurrence.getTime() - b.nextOccurrence.getTime(),
     );
 
-    return upcomingEvents.slice(0, limit).map((e) => e.event);
+    return events;
+  }
+
+  async findUniqueEvents(limit: number) {
+    const events = await this.eventsRepository.find({
+      where: { repetition: null },
+      order: { startDate: 'ASC' },
+      take: limit,
+    });
+
+    return events;
   }
 
   private calculateUpcomingOccurrences(event: Events, referenceDate: Date) {
