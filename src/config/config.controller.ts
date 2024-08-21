@@ -5,7 +5,13 @@ import { FirebaseAuthGuard } from '../auth/firebase-auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
 import { UserRole } from '../user/entities/user.entity';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiTags,
+  ApiOperation,
+  ApiOkResponse,
+} from '@nestjs/swagger';
+import { Config } from './entities/config.entity';
 
 @ApiTags('config')
 @Controller('config')
@@ -13,17 +19,32 @@ export class ConfigController {
   constructor(private readonly configService: ConfigService) {}
 
   @Get('general-normative')
-  async getGeneralNormative() {
+  @ApiOperation({ summary: 'Obtener las normativas generales' })
+  @ApiOkResponse({
+    description: 'Normativas generales devueltas correctamente',
+    type: String,
+  })
+  async getGeneralNormative(): Promise<string> {
     return this.configService.getGeneralNormative();
   }
 
   @Get('staff-normative')
-  async getStaffNormative() {
+  @ApiOperation({ summary: 'Obtener las normativas del staff' })
+  @ApiOkResponse({
+    description: 'Normativas del staff devueltas correctamente',
+    type: String,
+  })
+  async getStaffNormative(): Promise<string> {
     return this.configService.getStaffNormative();
   }
 
   @Get('project-info')
-  async getProjectInfo() {
+  @ApiOperation({ summary: 'Obtener la información del proyecto' })
+  @ApiOkResponse({
+    description: 'Información del proyecto devuelta correctamente',
+    type: String,
+  })
+  async getProjectInfo(): Promise<string> {
     return this.configService.getProjectInfo();
   }
 
@@ -31,7 +52,14 @@ export class ConfigController {
   @UseGuards(FirebaseAuthGuard, RolesGuard)
   @Roles(UserRole.SUPER_ADMIN)
   @ApiBearerAuth()
-  async updateConfig(@Body() updateConfigDto: UpdateConfigDto) {
+  @ApiOperation({ summary: 'Actualizar la configuración' })
+  @ApiOkResponse({
+    description: 'Configuración actualizada correctamente',
+    type: Config,
+  })
+  async updateConfig(
+    @Body() updateConfigDto: UpdateConfigDto,
+  ): Promise<Config> {
     return this.configService.update(updateConfigDto);
   }
 }

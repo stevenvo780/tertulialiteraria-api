@@ -21,6 +21,7 @@ import {
 } from '@nestjs/swagger';
 import { User } from './entities/user.entity';
 import { RequestWithUser } from '../auth/types';
+import { UpdateResult } from 'typeorm';
 
 @ApiTags('user')
 @ApiBearerAuth()
@@ -30,45 +31,48 @@ export class UserController {
 
   @UseGuards(FirebaseAuthGuard, RolesGuard)
   @Roles(UserRole.SUPER_ADMIN)
-  @ApiOperation({ summary: 'Get all users (Super Admin only)' })
-  @ApiOkResponse({ description: 'Return all users.', type: [User] })
+  @ApiOperation({ summary: 'Obtener todos los usuarios (Solo Super Admin)' })
+  @ApiOkResponse({ description: 'Lista de todos los usuarios', type: [User] })
   @Get()
-  findAll() {
+  findAll(): Promise<User[]> {
     return this.userService.findAll();
   }
 
   @UseGuards(FirebaseAuthGuard, RolesGuard)
   @Roles(UserRole.SUPER_ADMIN)
-  @ApiOperation({ summary: 'Get a user by ID (Super Admin only)' })
-  @ApiOkResponse({ description: 'Return a user.', type: User })
-  @ApiNotFoundResponse({ description: 'User not found.' })
+  @ApiOperation({ summary: 'Obtener un usuario por ID (Solo Super Admin)' })
+  @ApiOkResponse({ description: 'Usuario encontrado', type: User })
+  @ApiNotFoundResponse({ description: 'Usuario no encontrado.' })
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id') id: string): Promise<User> {
     return this.userService.findOne(id);
   }
 
   @UseGuards(FirebaseAuthGuard)
-  @ApiOperation({ summary: 'Get the authenticated user' })
-  @ApiOkResponse({ description: 'Return the authenticated user.', type: User })
+  @ApiOperation({ summary: 'Obtener el usuario autenticado' })
+  @ApiOkResponse({
+    description: 'Usuario autenticado devuelto correctamente.',
+    type: User,
+  })
   @Get('me/data')
-  getMe(@Request() req: RequestWithUser) {
+  getMe(@Request() req: RequestWithUser): User {
     return req.user;
   }
 
   @UseGuards(FirebaseAuthGuard, RolesGuard)
   @Roles(UserRole.SUPER_ADMIN)
   @ApiOperation({
-    summary: 'Update the role of a user by ID (Super Admin only)',
+    summary: 'Actualizar el rol de un usuario por ID (Solo Super Admin)',
   })
   @ApiOkResponse({
-    description: 'The user role has been successfully updated.',
+    description: 'El rol del usuario ha sido actualizado correctamente.',
   })
-  @ApiNotFoundResponse({ description: 'User not found.' })
+  @ApiNotFoundResponse({ description: 'Usuario no encontrado.' })
   @Patch(':id')
   updateRole(
     @Param('id') id: string,
     @Body() updateUserDto: Partial<Pick<User, 'role'>>,
-  ) {
+  ): Promise<UpdateResult> {
     return this.userService.updateRole(id, updateUserDto.role);
   }
 }

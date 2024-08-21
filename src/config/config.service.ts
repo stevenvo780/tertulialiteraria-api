@@ -12,7 +12,7 @@ export class ConfigService {
     private configRepository: Repository<Config>,
   ) {}
 
-  async create(createConfigDto: CreateConfigDto) {
+  async create(createConfigDto: CreateConfigDto): Promise<Config> {
     const newConfig = new Config();
     Object.assign(newConfig, createConfigDto);
     return this.configRepository.save(newConfig);
@@ -41,7 +41,7 @@ export class ConfigService {
     return this.configRepository.save(defaultConfig);
   }
 
-  async update(updateConfigDto: UpdateConfigDto) {
+  async update(updateConfigDto: UpdateConfigDto): Promise<Config> {
     const config = await this.getConfig();
     Object.assign(config, updateConfigDto);
     return this.configRepository.save(config);

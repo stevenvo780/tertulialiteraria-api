@@ -1,6 +1,6 @@
 import { Injectable, ForbiddenException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DeleteResult, Repository } from 'typeorm';
 import { Library, LibraryVisibility } from './entities/library.entity';
 import { User, UserRole } from '../user/entities/user.entity';
 import { CreateLibraryDto } from './dto/create-library.dto';
@@ -13,7 +13,10 @@ export class LibraryService {
     private libraryRepository: Repository<Library>,
   ) {}
 
-  async create(createLibraryDto: CreateLibraryDto, user: User) {
+  async create(
+    createLibraryDto: CreateLibraryDto,
+    user: User,
+  ): Promise<Library> {
     const newLibraryItem = new Library();
     Object.assign(newLibraryItem, createLibraryDto);
     newLibraryItem.author = user;
@@ -30,7 +33,7 @@ export class LibraryService {
     return this.libraryRepository.save(newLibraryItem);
   }
 
-  findAll(user?: User) {
+  findAll(user?: User): Promise<Library[]> {
     let query = this.libraryRepository
       .createQueryBuilder('library')
       .leftJoinAndSelect('library.children', 'children')
@@ -62,28 +65,25 @@ export class LibraryService {
     return query.getMany();
   }
 
-  findOne(id: number, user?: User) {
-    return this.libraryRepository
-      .findOne({
-        where: { id },
-        relations: ['children'],
-      })
-      .then((library) => {
-        if (!library) throw new Error('Nota no encontrada');
+  async findOne(id: number, user?: User): Promise<Library> {
+    const library = await this.libraryRepository.findOne({
+      where: { id },
+      relations: ['children'],
+    });
+    if (!library) throw new Error('Nota no encontrada');
 
-        if (
-          (library.visibility === LibraryVisibility.ADMIN &&
-            (!user ||
-              (user.role !== UserRole.ADMIN &&
-                user.role !== UserRole.SUPER_ADMIN))) ||
-          (library.visibility === LibraryVisibility.USERS &&
-            (!user || user.role === UserRole.USER))
-        ) {
-          throw new ForbiddenException('No tienes acceso a esta nota');
-        }
+    if (
+      (library.visibility === LibraryVisibility.ADMIN &&
+        (!user ||
+          (user.role !== UserRole.ADMIN &&
+            user.role !== UserRole.SUPER_ADMIN))) ||
+      (library.visibility === LibraryVisibility.USERS &&
+        (!user || user.role === UserRole.USER))
+    ) {
+      throw new ForbiddenException('No tienes acceso a esta nota');
+    }
 
-        return library;
-      });
+    return library;
   }
 
   async findLatest(limit: number, user?: User): Promise<Library[]> {
@@ -118,7 +118,11 @@ export class LibraryService {
     return query.getMany();
   }
 
-  async update(id: number, updateLibraryDto: UpdateLibraryDto, user: User) {
+  async update(
+    id: number,
+    updateLibraryDto: UpdateLibraryDto,
+    user: User,
+  ): Promise<Library> {
     const libraryItem = await this.findOne(id, user);
     if (!libraryItem) throw new Error('Nota no encontrada');
 
@@ -126,7 +130,7 @@ export class LibraryService {
     return this.libraryRepository.save(libraryItem);
   }
 
-  remove(id: number) {
+  remove(id: number): Promise<DeleteResult> {
     return this.libraryRepository.delete(id);
   }
 
