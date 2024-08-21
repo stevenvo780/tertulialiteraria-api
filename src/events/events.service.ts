@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, MoreThan, Not } from 'typeorm';
+import { Repository, MoreThan, Not, DeleteResult } from 'typeorm';
 import { Events } from './entities/events.entity';
 import { User } from '../user/entities/user.entity';
 import { CreateEventsDto } from './dto/create-events.dto';
@@ -13,7 +13,7 @@ export class EventsService {
     private eventsRepository: Repository<Events>,
   ) {}
 
-  async create(createEventsDto: CreateEventsDto, user: User) {
+  async create(createEventsDto: CreateEventsDto, user: User): Promise<Events> {
     const baseEvent = new Events();
     Object.assign(baseEvent, createEventsDto);
     baseEvent.author = user;
@@ -21,11 +21,11 @@ export class EventsService {
     return this.eventsRepository.save(baseEvent);
   }
 
-  findAll() {
+  findAll(): Promise<Events[]> {
     return this.eventsRepository.find();
   }
 
-  findOne(id: number) {
+  findOne(id: number): Promise<Events | null> {
     return this.eventsRepository.findOne({
       where: { id },
     });
@@ -56,7 +56,7 @@ export class EventsService {
     return events;
   }
 
-  async findUniqueEvents(limit: number) {
+  async findUniqueEvents(limit: number): Promise<Events[]> {
     const events = await this.eventsRepository.find({
       where: { repetition: null },
       order: { startDate: 'ASC' },
@@ -66,7 +66,10 @@ export class EventsService {
     return events;
   }
 
-  private calculateUpcomingOccurrences(event: Events, referenceDate: Date) {
+  private calculateUpcomingOccurrences(
+    event: Events,
+    referenceDate: Date,
+  ): { event: Events; nextOccurrence: Date }[] {
     const occurrences = [];
     let nextDate = new Date(event.startDate);
 
@@ -99,13 +102,13 @@ export class EventsService {
     return nextDate;
   }
 
-  async update(id: number, updateEventsDto: UpdateEventsDto) {
+  async update(id: number, updateEventsDto: UpdateEventsDto): Promise<Events> {
     const events = await this.eventsRepository.findOne({ where: { id } });
     Object.assign(events, updateEventsDto);
     return this.eventsRepository.save(events);
   }
 
-  remove(id: number) {
+  remove(id: number): Promise<DeleteResult> {
     return this.eventsRepository.delete(id);
   }
 }
