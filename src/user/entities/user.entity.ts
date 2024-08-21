@@ -1,14 +1,16 @@
 import { Entity, Column, PrimaryColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
+import { SharedProp } from '../../common/entities/sharedProp.helper';
 
 export enum UserRole {
   SUPER_ADMIN = 'super_admin',
   ADMIN = 'admin',
+  EDITOR = 'editor',
   USER = 'user',
 }
 
 @Entity()
-export class User {
+export class User extends SharedProp {
   @PrimaryColumn()
   @ApiProperty({
     description: 'Identificador único del usuario',

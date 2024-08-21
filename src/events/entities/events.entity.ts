@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { User } from '../../user/entities/user.entity';
 import { ApiProperty } from '@nestjs/swagger';
+import { SharedProp } from '../../common/entities/sharedProp.helper';
 
 export enum Repetition {
   NONE = 'none',
@@ -18,7 +19,7 @@ export enum Repetition {
 }
 
 @Entity()
-export class Events {
+export class Events extends SharedProp {
   @PrimaryGeneratedColumn()
   @ApiProperty({
     description: 'Identificador único del evento',
