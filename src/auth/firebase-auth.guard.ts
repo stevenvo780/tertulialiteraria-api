@@ -34,11 +34,10 @@ export class FirebaseAuthGuard implements CanActivate {
       let user = await this.userRepository.findOne({ where: { id: userId } });
 
       if (!user && email) {
-        const isAdmin = this.isEmailAdmin(email); // Ejemplo de cómo asignar un rol
         const newUser = this.userRepository.create({
           id: userId,
           email,
-          role: isAdmin ? UserRole.ADMIN : UserRole.USER,
+          role: UserRole.USER,
         });
         user = await this.userRepository.save(newUser);
       }
@@ -51,10 +50,5 @@ export class FirebaseAuthGuard implements CanActivate {
       console.error(error);
       throw new UnauthorizedException('Invalid or expired token');
     }
-  }
-
-  private isEmailAdmin(email: string): boolean {
-    const adminEmails = ['admin@example.com']; // Lista de correos de administradores
-    return adminEmails.includes(email);
   }
 }

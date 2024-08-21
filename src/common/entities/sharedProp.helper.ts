@@ -1,4 +1,3 @@
-// src/common/entities/sharedProp.helper.ts
 import { CreateDateColumn, UpdateDateColumn } from 'typeorm';
 
 export abstract class SharedProp {

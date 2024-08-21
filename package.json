@@ -1,10 +1,10 @@
 {
-  "name": "pos",
+  "name": "tertulia-literaria-api",
   "version": "0.0.1",
-  "description": "",
-  "author": "",
-  "private": true,
-  "license": "UNLICENSED",
+  "description": "Este es un proyecto par Tertulia Literaria una comunidad de discord",
+  "author": "Steven Vallejo Ortiz",
+  "private": false,
+  "license": "MIT",
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",

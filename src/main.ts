@@ -15,7 +15,7 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle('POS API')
     .setDescription(
-      'The API documentation for the Point of Sale (POS) system. This includes endpoints for managing users, products, invoices, clients, categories, and cash boxes.',
+      'Esta es la documentacion de TERTULIA LITERARIA sientete libre de aportar a nuestro proyecto',
     )
     .setVersion('1.0')
     .addBearerAuth(
