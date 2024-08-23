@@ -26,6 +26,7 @@ export class PublicationService {
   findAll(limit: number, offset: number): Promise<Publication[]> {
     return this.publicationRepository.find({
       order: { createdAt: 'DESC' },
+      relations: ['author'],
       skip: offset,
       take: limit,
     });
