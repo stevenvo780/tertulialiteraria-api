@@ -8,6 +8,7 @@ import {
   Delete,
   UseGuards,
   Request,
+  Query,
 } from '@nestjs/common';
 import { PublicationService } from './publication.service';
 import { CreatePublicationDto } from './dto/create-publication.dto';
@@ -38,8 +39,11 @@ export class PublicationController {
     type: [Publication],
   })
   @Get()
-  findAll(): Promise<Publication[]> {
-    return this.publicationService.findAll();
+  async findAll(
+    @Query('limit') limit = 4,
+    @Query('offset') offset = 0,
+  ): Promise<Publication[]> {
+    return this.publicationService.findAll(Number(limit), Number(offset));
   }
 
   @ApiOperation({ summary: 'Obtener una publicación por ID' })
