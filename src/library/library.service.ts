@@ -68,7 +68,7 @@ export class LibraryService {
   async findOne(id: number, user?: User): Promise<Library> {
     const library = await this.libraryRepository.findOne({
       where: { id },
-      relations: ['children'],
+      relations: ['children', 'author'],
     });
     if (!library) throw new Error('Nota no encontrada');
 
