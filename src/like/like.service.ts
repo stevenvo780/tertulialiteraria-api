@@ -18,20 +18,14 @@ export class LikeService {
   ): Promise<Like | null> {
     const existingLike = await this.likeRepository.findOne({
       where: {
-        user,
+        user: { id: user.id },
         targetType: createLikeDto.targetType,
         targetId: createLikeDto.targetId,
       },
     });
-
     if (existingLike) {
-      if (existingLike.isLike === createLikeDto.isLike) {
-        await this.likeRepository.remove(existingLike);
-        return null;
-      } else {
-        existingLike.isLike = createLikeDto.isLike;
-        return this.likeRepository.save(existingLike);
-      }
+      existingLike.isLike = createLikeDto.isLike;
+      return this.likeRepository.save(existingLike);
     }
 
     const newLike = new Like();
@@ -80,7 +74,7 @@ export class LikeService {
       where: {
         targetType,
         targetId,
-        user,
+        user: { id: user.id },
       },
     });
   }
