@@ -17,11 +17,13 @@ export class AuthService {
       const newUser = await admin.auth().createUser({
         email: user.email,
         password: user.password,
+        displayName: user.name,
       });
 
       const userEntity = new User();
       userEntity.email = newUser.email;
       userEntity.id = newUser.uid;
+      userEntity.name = user.name;
       await this.userRepositoy.save(userEntity);
 
       return userEntity;

@@ -12,6 +12,7 @@ import { LibraryModule } from './library/library.module';
 import { PublicationModule } from './publication/publication.module';
 import { ConfigAppModule } from './config/config.module';
 import { TemplateModule } from './template/template.module';
+import { LikeModule } from './like/like.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { TemplateModule } from './template/template.module';
     LibraryModule,
     ConfigAppModule,
     TemplateModule,
+    LikeModule,
   ],
   controllers: [AppController],
   providers: [AppService, AppProvider],

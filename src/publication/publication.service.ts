@@ -23,8 +23,12 @@ export class PublicationService {
     return this.publicationRepository.save(newPublication);
   }
 
-  findAll(): Promise<Publication[]> {
-    return this.publicationRepository.find();
+  findAll(limit: number, offset: number): Promise<Publication[]> {
+    return this.publicationRepository.find({
+      order: { createdAt: 'DESC' },
+      skip: offset,
+      take: limit,
+    });
   }
 
   findOne(id: number): Promise<Publication | null> {
