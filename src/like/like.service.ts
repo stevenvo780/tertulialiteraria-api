@@ -75,21 +75,13 @@ export class LikeService {
     targetId: number,
     user: User,
   ): Promise<Like | null> {
-    if (user) {
-      return this.likeRepository.findOne({
-        where: {
-          targetType,
-          targetId,
-          user: { id: user.id },
-        },
-      });
-    } else {
-      return this.likeRepository.findOne({
-        where: {
-          targetType,
-          targetId,
-        },
-      });
-    }
+    if (!user) return null;
+    return this.likeRepository.findOne({
+      where: {
+        targetType,
+        targetId,
+        user: { id: user.id },
+      },
+    });
   }
 }
