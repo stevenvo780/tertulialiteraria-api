@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Like, LikeTarget } from './entities/like.entity';
@@ -16,6 +16,10 @@ export class LikeService {
     createLikeDto: CreateLikeDto,
     user: User,
   ): Promise<Like | null> {
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
     const existingLike = await this.likeRepository.findOne({
       where: {
         user: { id: user.id },
@@ -23,6 +27,7 @@ export class LikeService {
         targetId: createLikeDto.targetId,
       },
     });
+
     if (existingLike) {
       existingLike.isLike = createLikeDto.isLike;
       return this.likeRepository.save(existingLike);
@@ -70,12 +75,21 @@ export class LikeService {
     targetId: number,
     user: User,
   ): Promise<Like | null> {
-    return this.likeRepository.findOne({
-      where: {
-        targetType,
-        targetId,
-        user: { id: user.id },
-      },
-    });
+    if (user) {
+      return this.likeRepository.findOne({
+        where: {
+          targetType,
+          targetId,
+          user: { id: user.id },
+        },
+      });
+    } else {
+      return this.likeRepository.findOne({
+        where: {
+          targetType,
+          targetId,
+        },
+      });
+    }
   }
 }

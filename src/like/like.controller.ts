@@ -11,6 +11,7 @@ import {
 import { LikeService } from './like.service';
 import { CreateLikeDto } from './dto/create-like.dto';
 import { FirebaseAuthGuard } from '../auth/firebase-auth.guard';
+import { OptionalFirebaseAuthGuard } from '../auth/optional-firebase-auth.guard';
 import { RequestWithUser } from '../auth/types';
 import {
   ApiBearerAuth,
@@ -56,11 +57,11 @@ export class LikeController {
     type: [Like],
   })
   @Get(':targetType/:targetId')
-  @UseGuards(FirebaseAuthGuard)
-  @ApiBearerAuth()
+  @UseGuards(OptionalFirebaseAuthGuard)
   findLikesByTarget(
     @Param('targetType') targetType: LikeTarget,
     @Param('targetId') targetId: string,
+    @Request() req: RequestWithUser,
   ): Promise<Like[]> {
     return this.likeService.findLikesByTarget(targetType, +targetId);
   }
@@ -79,8 +80,7 @@ export class LikeController {
     },
   })
   @Get(':targetType/:targetId/count')
-  @UseGuards(FirebaseAuthGuard)
-  @ApiBearerAuth()
+  @UseGuards(OptionalFirebaseAuthGuard)
   countLikesAndDislikes(
     @Param('targetType') targetType: LikeTarget,
     @Param('targetId') targetId: string,
@@ -96,8 +96,7 @@ export class LikeController {
     type: Like,
   })
   @Get(':targetType/:targetId/user-like')
-  @UseGuards(FirebaseAuthGuard)
-  @ApiBearerAuth()
+  @UseGuards(OptionalFirebaseAuthGuard)
   findUserLike(
     @Param('targetType') targetType: LikeTarget,
     @Param('targetId') targetId: string,
