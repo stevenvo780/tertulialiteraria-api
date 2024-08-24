@@ -32,10 +32,11 @@ export class FirebaseAuthGuard implements CanActivate {
       const email = decodedToken.email;
 
       let user = await this.userRepository.findOne({ where: { id: userId } });
-
+      console.log('decodedToken', decodedToken);
       if (!user && email) {
         const newUser = this.userRepository.create({
           id: userId,
+          name: decodedToken.name,
           email,
           role: UserRole.USER,
         });
