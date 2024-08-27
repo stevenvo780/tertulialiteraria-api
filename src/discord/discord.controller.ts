@@ -53,12 +53,15 @@ export class DiscordController {
     @Headers('x-signature-ed25519') signature: string,
     @Headers('x-signature-timestamp') timestamp: string,
   ): Promise<any> {
+    console.log('eventPayload', eventPayload);
     const publicKey = process.env.DISCORD_PUBLIC_KEY;
     const isVerified = nacl.sign.detached.verify(
       Buffer.from(timestamp + JSON.stringify(eventPayload)),
       Buffer.from(signature, 'hex'),
       Buffer.from(publicKey, 'hex'),
     );
+
+    console.log('isVerified', isVerified);
 
     if (!isVerified) {
       throw new Error('Invalid request signature');
