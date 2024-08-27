@@ -40,7 +40,7 @@ export class Events extends SharedProp {
     type: 'object',
     example: { content: 'Descripción detallada del evento...' },
   })
-  description: object;
+  description: string;
 
   @Column()
   @ApiProperty({

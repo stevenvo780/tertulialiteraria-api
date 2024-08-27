@@ -1,54 +1,24 @@
 import {
   Controller,
   Get,
-  Param,
-  Query,
-  Redirect,
-  UseGuards,
+  Post,
+  Body,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { DiscordService } from './discord.service';
-import { FirebaseAuthGuard } from '../auth/firebase-auth.guard';
-import { RolesGuard } from '../auth/roles.guard';
-import { Roles } from '../auth/roles.decorator';
-import { UserRole } from '../user/entities/user.entity';
-import {
-  ApiBearerAuth,
-  ApiTags,
-  ApiOperation,
-  ApiOkResponse,
-} from '@nestjs/swagger';
+import { EventsService } from '../events/events.service';
+import { LibraryService } from '../library/library.service'; // Importamos el servicio de la librería
+import { ApiTags, ApiOperation, ApiOkResponse } from '@nestjs/swagger';
 
 @ApiTags('discord')
 @Controller('discord')
 export class DiscordController {
-  constructor(private readonly discordService: DiscordService) {}
-
-  @ApiOperation({ summary: 'Iniciar autenticación con Discord' })
-  @Get('login')
-  @Redirect()
-  async login() {
-    const clientId = process.env.DISCORD_CLIENT_ID;
-    const redirectUri = process.env.DISCORD_REDIRECT_URI;
-    const scope = 'identify email';
-    const discordAuthUrl = `https://discord.com/api/oauth2/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(
-      redirectUri,
-    )}&response_type=code&scope=${scope}`;
-
-    return { url: discordAuthUrl };
-  }
-
-  @ApiOperation({
-    summary: 'Redirección después de la autenticación con Discord',
-  })
-  @ApiOkResponse({
-    description: 'Autenticación exitosa, devuelve la información del usuario.',
-  })
-  @Get('redirect')
-  async handleRedirect(@Query('code') code: string) {
-    const accessToken = await this.discordService.getAccessToken(code);
-    const userInfo = await this.discordService.getUserInfo(accessToken);
-    return { userInfo };
-  }
+  constructor(
+    private readonly discordService: DiscordService,
+    private readonly eventsService: EventsService,
+    private readonly libraryService: LibraryService,
+  ) {}
 
   @ApiOperation({
     summary: 'Obtener el total de miembros de un servidor de Discord',
@@ -57,11 +27,9 @@ export class DiscordController {
     description: 'Número total de miembros en el servidor',
     type: Number,
   })
-  @Get('guild/:guildId/members')
-  async getGuildMemberCount(
-    @Param('guildId') guildId: string,
-  ): Promise<number> {
-    return this.discordService.getGuildMemberCount(guildId);
+  @Get('guild/members')
+  async getGuildMemberCount(): Promise<number> {
+    return this.discordService.getGuildMemberCount();
   }
 
   @ApiOperation({
@@ -71,10 +39,40 @@ export class DiscordController {
     description: 'Número de miembros activos (en línea) en el servidor',
     type: Number,
   })
-  @Get('guild/:guildId/online')
-  async getOnlineMemberCount(
-    @Param('guildId') guildId: string,
-  ): Promise<number> {
-    return this.discordService.getOnlineMemberCount(guildId);
+  @Get('guild/online')
+  async getOnlineMemberCount(): Promise<number> {
+    return this.discordService.getOnlineMemberCount();
+  }
+
+  @Post('webhook')
+  @HttpCode(HttpStatus.OK)
+  async handleDiscordWebhook(@Body() eventPayload: any): Promise<void> {
+    if (eventPayload.type === 'GUILD_COMMAND_CREATE_NOTE') {
+      const { titulo, contenido } = eventPayload.data.options;
+
+      await this.libraryService.create(
+        {
+          title: titulo,
+          description: contenido,
+          referenceDate: new Date(),
+        },
+        null,
+      );
+    }
+
+    if (eventPayload.type === 'GUILD_SCHEDULED_EVENT_CREATE') {
+      const { name, description, scheduled_start_time, scheduled_end_time } =
+        eventPayload;
+
+      const createEventDto = {
+        title: name,
+        description: { content: description },
+        startDate: new Date(scheduled_start_time),
+        endDate: new Date(scheduled_end_time),
+        repetition: 'none',
+      };
+
+      await this.eventsService.create(createEventDto, null);
+    }
   }
 }

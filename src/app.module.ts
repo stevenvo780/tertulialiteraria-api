@@ -1,4 +1,9 @@
-import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
+import {
+  Module,
+  NestModule,
+  MiddlewareConsumer,
+  OnModuleInit,
+} from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { EventsModule } from './events/events.module';
@@ -14,6 +19,7 @@ import { ConfigAppModule } from './config/config.module';
 import { TemplateModule } from './template/template.module';
 import { LikeModule } from './like/like.module';
 import { DiscordModule } from './discord/discord.module';
+import { registerDiscordCommands } from './utils/register-commands.ts';
 
 @Module({
   imports: [
@@ -41,8 +47,12 @@ import { DiscordModule } from './discord/discord.module';
   controllers: [AppController],
   providers: [AppService, AppProvider],
 })
-export class AppModule implements NestModule {
+export class AppModule implements NestModule, OnModuleInit {
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(LoggerMiddleware).forRoutes('*');
+  }
+
+  async onModuleInit() {
+    await registerDiscordCommands();
   }
 }

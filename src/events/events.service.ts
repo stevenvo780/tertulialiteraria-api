@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, MoreThan, Not, DeleteResult } from 'typeorm';
+import { Repository, MoreThan, DeleteResult } from 'typeorm';
 import { Events, Repetition } from './entities/events.entity';
 import { User } from '../user/entities/user.entity';
 import { CreateEventsDto } from './dto/create-events.dto';
 import { UpdateEventsDto } from './dto/update-events.dto';
+import { createDiscordEvent } from '../utils/discord-utils';
 
 @Injectable()
 export class EventsService {
@@ -18,7 +19,11 @@ export class EventsService {
     Object.assign(baseEvent, createEventsDto);
     baseEvent.author = user;
 
-    return this.eventsRepository.save(baseEvent);
+    const savedEvent = await this.eventsRepository.save(baseEvent);
+
+    await createDiscordEvent(process.env.DISCORD_GUILD_ID, createEventsDto);
+
+    return savedEvent;
   }
 
   findAll(): Promise<Events[]> {
