@@ -4,13 +4,15 @@ import {
   GuildScheduledEventPrivacyLevel,
 } from 'discord.js';
 import axios from 'axios';
+import * as TurndownService from 'turndown';
 import { CreateEventsDto } from 'src/events/dto/create-events.dto';
 
 const client = new Client({
   intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildScheduledEvents],
 });
 
-// Iniciar sesión en Discord
+const turndownService = new TurndownService();
+
 export async function initializeDiscordClient(token: string): Promise<void> {
   try {
     await client.login(token);
@@ -21,22 +23,40 @@ export async function initializeDiscordClient(token: string): Promise<void> {
   }
 }
 
-// Crear un evento en Discord
 export async function createDiscordEvent(
   guildId: string,
   createEventDto: CreateEventsDto,
 ): Promise<void> {
   try {
-    console.log(createEventDto);
+    const now = new Date();
+    const startDate = new Date(createEventDto.startDate);
+    const endDate = new Date(createEventDto.endDate);
+
+    if (startDate < now) {
+      throw new Error('Cannot schedule event in the past.');
+    }
+
+    if (endDate <= startDate) {
+      throw new Error('End date must be after the start date.');
+    }
+
     const guild = await client.guilds.fetch(guildId);
     console.log('Guild fetched successfully.');
+
+    const markdownDescription = turndownService.turndown(
+      createEventDto.description,
+    );
+
     await guild.scheduledEvents.create({
       name: createEventDto.title,
-      scheduledStartTime: createEventDto.startDate,
-      scheduledEndTime: createEventDto.endDate,
-      description: createEventDto.description.toString(),
+      scheduledStartTime: startDate,
+      scheduledEndTime: endDate,
+      description: markdownDescription,
       entityType: 3,
       privacyLevel: GuildScheduledEventPrivacyLevel.GuildOnly,
+      entityMetadata: {
+        location: 'Tertulia Literaria',
+      },
     });
 
     console.log('Event created in Discord successfully.');
