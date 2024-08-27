@@ -58,9 +58,6 @@ export class DiscordController {
     type: Number,
   })
   @Get('guild/:guildId/members')
-  @UseGuards(FirebaseAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN)
-  @ApiBearerAuth()
   async getGuildMemberCount(
     @Param('guildId') guildId: string,
   ): Promise<number> {
@@ -75,9 +72,6 @@ export class DiscordController {
     type: Number,
   })
   @Get('guild/:guildId/online')
-  @UseGuards(FirebaseAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN)
-  @ApiBearerAuth()
   async getOnlineMemberCount(
     @Param('guildId') guildId: string,
   ): Promise<number> {
