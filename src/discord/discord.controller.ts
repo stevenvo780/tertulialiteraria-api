@@ -3,13 +3,15 @@ import {
   Get,
   Post,
   Body,
+  Headers,
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
 import { DiscordService } from './discord.service';
 import { EventsService } from '../events/events.service';
-import { LibraryService } from '../library/library.service'; // Importamos el servicio de la librería
+import { LibraryService } from '../library/library.service';
 import { ApiTags, ApiOperation, ApiOkResponse } from '@nestjs/swagger';
+import * as nacl from 'tweetnacl';
 
 @ApiTags('discord')
 @Controller('discord')
@@ -46,11 +48,27 @@ export class DiscordController {
 
   @Post('webhook')
   @HttpCode(HttpStatus.OK)
-  async handleDiscordWebhook(@Body() eventPayload: any): Promise<any> {
+  async handleDiscordWebhook(
+    @Body() eventPayload: any,
+    @Headers('x-signature-ed25519') signature: string,
+    @Headers('x-signature-timestamp') timestamp: string,
+  ): Promise<any> {
+    const publicKey = process.env.DISCORD_PUBLIC_KEY;
+    const isVerified = nacl.sign.detached.verify(
+      Buffer.from(timestamp + JSON.stringify(eventPayload)),
+      Buffer.from(signature, 'hex'),
+      Buffer.from(publicKey, 'hex'),
+    );
+
+    if (!isVerified) {
+      throw new Error('Invalid request signature');
+    }
+
     if (eventPayload.type === 1) {
       return { type: 1 };
     }
 
+    // Comandos personalizados de Discord
     if (eventPayload.type === 'GUILD_COMMAND_CREATE_NOTE') {
       const { titulo, contenido } = eventPayload.data.options;
 
