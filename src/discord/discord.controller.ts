@@ -8,6 +8,7 @@ import {
 } from '@nestjs/common';
 import { DiscordService } from './discord.service';
 import { EventsService } from '../events/events.service';
+import { LibraryService } from '../library/library.service'; // Importamos el servicio de la librería
 import { ApiTags, ApiOperation, ApiOkResponse } from '@nestjs/swagger';
 
 @ApiTags('discord')
@@ -16,6 +17,7 @@ export class DiscordController {
   constructor(
     private readonly discordService: DiscordService,
     private readonly eventsService: EventsService,
+    private readonly libraryService: LibraryService,
   ) {}
 
   @ApiOperation({
@@ -45,6 +47,19 @@ export class DiscordController {
   @Post('webhook')
   @HttpCode(HttpStatus.OK)
   async handleDiscordWebhook(@Body() eventPayload: any): Promise<void> {
+    if (eventPayload.type === 'GUILD_COMMAND_CREATE_NOTE') {
+      const { titulo, contenido } = eventPayload.data.options;
+
+      await this.libraryService.create(
+        {
+          title: titulo,
+          description: contenido,
+          referenceDate: new Date(),
+        },
+        null,
+      );
+    }
+
     if (eventPayload.type === 'GUILD_SCHEDULED_EVENT_CREATE') {
       const { name, description, scheduled_start_time, scheduled_end_time } =
         eventPayload;
