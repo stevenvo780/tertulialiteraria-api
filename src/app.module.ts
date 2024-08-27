@@ -13,6 +13,7 @@ import { PublicationModule } from './publication/publication.module';
 import { ConfigAppModule } from './config/config.module';
 import { TemplateModule } from './template/template.module';
 import { LikeModule } from './like/like.module';
+import { DiscordModule } from './discord/discord.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { LikeModule } from './like/like.module';
     ConfigAppModule,
     TemplateModule,
     LikeModule,
+    DiscordModule,
   ],
   controllers: [AppController],
   providers: [AppService, AppProvider],
