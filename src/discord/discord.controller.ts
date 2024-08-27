@@ -54,7 +54,7 @@ export class DiscordController {
     @Headers('x-signature-ed25519') signature: string,
     @Headers('x-signature-timestamp') timestamp: string,
   ): Promise<any> {
-    console.log('eventPayload', eventPayload);
+    console.log('eventPayload', JSON.stringify(eventPayload));
     const publicKey = process.env.DISCORD_PUBLIC_KEY;
     const isVerified = nacl.sign.detached.verify(
       Buffer.from(timestamp + JSON.stringify(eventPayload)),
@@ -74,15 +74,13 @@ export class DiscordController {
 
     if (eventPayload.type === InteractionType.ApplicationCommand) {
       const { titulo, contenido } = eventPayload.data.options;
+      const data = {
+        title: titulo,
+        description: contenido,
+        referenceDate: new Date(),
+      };
 
-      await this.libraryService.create(
-        {
-          title: titulo,
-          description: contenido,
-          referenceDate: new Date(),
-        },
-        null,
-      );
+      await this.libraryService.create(data, null);
 
       return {
         type: InteractionResponseType.ChannelMessageWithSource,
