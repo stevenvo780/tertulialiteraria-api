@@ -46,7 +46,11 @@ export class DiscordController {
 
   @Post('webhook')
   @HttpCode(HttpStatus.OK)
-  async handleDiscordWebhook(@Body() eventPayload: any): Promise<void> {
+  async handleDiscordWebhook(@Body() eventPayload: any): Promise<any> {
+    if (eventPayload.type === 1) {
+      return { type: 1 };
+    }
+
     if (eventPayload.type === 'GUILD_COMMAND_CREATE_NOTE') {
       const { titulo, contenido } = eventPayload.data.options;
 
