@@ -1,11 +1,22 @@
-import { Controller, Get } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  HttpCode,
+  HttpStatus,
+} from '@nestjs/common';
 import { DiscordService } from './discord.service';
+import { EventsService } from '../events/events.service';
 import { ApiTags, ApiOperation, ApiOkResponse } from '@nestjs/swagger';
 
 @ApiTags('discord')
 @Controller('discord')
 export class DiscordController {
-  constructor(private readonly discordService: DiscordService) {}
+  constructor(
+    private readonly discordService: DiscordService,
+    private readonly eventsService: EventsService,
+  ) {}
 
   @ApiOperation({
     summary: 'Obtener el total de miembros de un servidor de Discord',
@@ -29,5 +40,24 @@ export class DiscordController {
   @Get('guild/online')
   async getOnlineMemberCount(): Promise<number> {
     return this.discordService.getOnlineMemberCount();
+  }
+
+  @Post('webhook')
+  @HttpCode(HttpStatus.OK)
+  async handleDiscordWebhook(@Body() eventPayload: any): Promise<void> {
+    if (eventPayload.type === 'GUILD_SCHEDULED_EVENT_CREATE') {
+      const { name, description, scheduled_start_time, scheduled_end_time } =
+        eventPayload;
+
+      const createEventDto = {
+        title: name,
+        description: { content: description },
+        startDate: new Date(scheduled_start_time),
+        endDate: new Date(scheduled_end_time),
+        repetition: 'none',
+      };
+
+      await this.eventsService.create(createEventDto, null);
+    }
   }
 }
