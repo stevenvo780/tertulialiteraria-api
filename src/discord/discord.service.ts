@@ -1,96 +1,48 @@
-import { Injectable, HttpException } from '@nestjs/common';
+import { Injectable, HttpException, OnModuleInit } from '@nestjs/common';
+import { Client, GatewayIntentBits } from 'discord.js';
 import axios from 'axios';
 
 @Injectable()
-export class DiscordService {
-  private readonly discordApiUrl = 'https://discord.com/api/v10';
+export class DiscordService implements OnModuleInit {
+  private readonly client: Client;
+  private readonly guildId = process.env.DISCORD_GUILD_ID;
 
-  async getAccessToken(code: string): Promise<string> {
-    const tokenUrl = `${this.discordApiUrl}/oauth2/token`;
-    const clientId = process.env.DISCORD_CLIENT_ID;
-    const clientSecret = process.env.DISCORD_CLIENT_SECRET;
-    const redirectUri = process.env.DISCORD_REDIRECT_URI;
+  constructor() {
+    this.client = new Client({
+      intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers],
+    });
+  }
 
+  async onModuleInit() {
     try {
-      const response = await axios.post(
-        tokenUrl,
-        new URLSearchParams({
-          client_id: clientId,
-          client_secret: clientSecret,
-          grant_type: 'authorization_code',
-          code,
-          redirect_uri: redirectUri,
-        }),
-        {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
-        },
-      );
-
-      return response.data.access_token;
+      await this.client.login(process.env.DISCORD_BOT_TOKEN);
+      console.log('Discord bot logged in successfully.');
     } catch (error) {
-      throw new HttpException(
-        'Failed to obtain access token',
-        error.response?.status || 500,
-      );
+      console.error('Error logging in to Discord:', error);
+      throw new HttpException('Failed to login to Discord', 500);
     }
   }
 
-  async getUserInfo(accessToken: string): Promise<any> {
-    const url = `${this.discordApiUrl}/users/@me`;
-
+  async getGuildMemberCount(): Promise<number> {
     try {
-      const response = await axios.get(url, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
-
-      return response.data;
-    } catch (error) {
-      throw new HttpException(
-        'Failed to fetch user info',
-        error.response?.status || 500,
-      );
-    }
-  }
-
-  async getGuildMemberCount(guildId: string): Promise<number> {
-    const url = `${this.discordApiUrl}/guilds/${guildId}`;
-    const botToken = process.env.DISCORD_BOT_TOKEN;
-
-    try {
-      const response = await axios.get(url, {
-        headers: {
-          Authorization: `Bot ${botToken}`,
-        },
-      });
-
-      return response.data.approximate_member_count;
+      const guild = await this.client.guilds.fetch(this.guildId);
+      return guild.memberCount;
     } catch (error) {
       throw new HttpException(
         'Failed to fetch guild member count',
-        error.response?.status || 500,
+        error.status || 500,
       );
     }
   }
 
-  async getOnlineMemberCount(guildId: string): Promise<number> {
-    const url = `${this.discordApiUrl}/guilds/${guildId}/widget.json`;
-    const botToken = process.env.DISCORD_BOT_TOKEN;
-
+  async getOnlineMemberCount(): Promise<number> {
+    const url = `https://discord.com/api/guilds/${this.guildId}/widget.json`;
     try {
-      const response = await axios.get(url, {
-        headers: {
-          Authorization: `Bot ${botToken}`,
-        },
-      });
-
+      const response = await axios.get(url);
       return response.data.presence_count;
     } catch (error) {
       throw new HttpException(
-        'Failed to fetch online member count',
+        'Failed to fetch online member count from widget',
         error.response?.status || 500,
       );
     }
