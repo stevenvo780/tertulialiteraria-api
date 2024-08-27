@@ -8,10 +8,14 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { DiscordService } from './discord.service';
-import { EventsService } from '../events/events.service';
 import { LibraryService } from '../library/library.service';
 import { ApiTags, ApiOperation, ApiOkResponse } from '@nestjs/swagger';
-import { InteractionType, InteractionResponseType } from 'discord.js';
+import {
+  Interaction,
+  InteractionType,
+  InteractionResponseType,
+  ChatInputCommandInteraction,
+} from 'discord.js';
 import * as nacl from 'tweetnacl';
 
 @ApiTags('discord')
@@ -19,7 +23,6 @@ import * as nacl from 'tweetnacl';
 export class DiscordController {
   constructor(
     private readonly discordService: DiscordService,
-    private readonly eventsService: EventsService,
     private readonly libraryService: LibraryService,
   ) {}
 
@@ -50,11 +53,10 @@ export class DiscordController {
   @Post('webhook')
   @HttpCode(HttpStatus.OK)
   async handleDiscordWebhook(
-    @Body() eventPayload: any,
+    @Body() eventPayload: Interaction,
     @Headers('x-signature-ed25519') signature: string,
     @Headers('x-signature-timestamp') timestamp: string,
   ): Promise<any> {
-    console.log('eventPayload', JSON.stringify(eventPayload));
     const publicKey = process.env.DISCORD_PUBLIC_KEY;
     const isVerified = nacl.sign.detached.verify(
       Buffer.from(timestamp + JSON.stringify(eventPayload)),
@@ -62,32 +64,36 @@ export class DiscordController {
       Buffer.from(publicKey, 'hex'),
     );
 
-    console.log('isVerified', isVerified);
-
     if (!isVerified) {
       throw new Error('Invalid request signature');
     }
 
-    if (eventPayload.type === InteractionType.Ping) {
-      return { type: InteractionType.Ping };
+    if (eventPayload.type === (InteractionType.Ping as number)) {
+      return { type: InteractionResponseType.Pong };
     }
 
     if (eventPayload.type === InteractionType.ApplicationCommand) {
-      const { titulo, contenido } = eventPayload.data.options;
-      const data = {
-        title: titulo,
-        description: contenido,
-        referenceDate: new Date(),
-      };
+      const interaction = eventPayload as ChatInputCommandInteraction;
 
-      await this.libraryService.create(data, null);
+      if (interaction.commandName === 'create_note') {
+        const titulo = interaction.options.getString('titulo');
+        const contenido = interaction.options.getString('contenido');
 
-      return {
-        type: InteractionResponseType.ChannelMessageWithSource,
-        data: {
-          content: 'Nota creada con éxito!',
-        },
-      };
+        const data = {
+          title: titulo,
+          description: contenido,
+          referenceDate: new Date(),
+        };
+
+        await this.libraryService.create(data, null);
+
+        return {
+          type: InteractionResponseType.ChannelMessageWithSource,
+          data: {
+            content: 'Nota creada con éxito!',
+          },
+        };
+      }
     }
   }
 }
