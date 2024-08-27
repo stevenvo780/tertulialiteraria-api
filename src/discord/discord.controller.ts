@@ -11,6 +11,7 @@ import { DiscordService } from './discord.service';
 import { EventsService } from '../events/events.service';
 import { LibraryService } from '../library/library.service';
 import { ApiTags, ApiOperation, ApiOkResponse } from '@nestjs/swagger';
+import { InteractionType, InteractionResponseType } from 'discord.js';
 import * as nacl from 'tweetnacl';
 
 @ApiTags('discord')
@@ -67,12 +68,11 @@ export class DiscordController {
       throw new Error('Invalid request signature');
     }
 
-    if (eventPayload.type === 1) {
-      return { type: 1 };
+    if (eventPayload.type === InteractionType.Ping) {
+      return { type: InteractionType.Ping };
     }
 
-    // Comandos personalizados de Discord
-    if (eventPayload.type === 'GUILD_COMMAND_CREATE_NOTE') {
+    if (eventPayload.type === InteractionType.ApplicationCommand) {
       const { titulo, contenido } = eventPayload.data.options;
 
       await this.libraryService.create(
@@ -83,21 +83,13 @@ export class DiscordController {
         },
         null,
       );
-    }
 
-    if (eventPayload.type === 'GUILD_SCHEDULED_EVENT_CREATE') {
-      const { name, description, scheduled_start_time, scheduled_end_time } =
-        eventPayload;
-
-      const createEventDto = {
-        title: name,
-        description: { content: description },
-        startDate: new Date(scheduled_start_time),
-        endDate: new Date(scheduled_end_time),
-        repetition: 'none',
+      return {
+        type: InteractionResponseType.ChannelMessageWithSource,
+        data: {
+          content: 'Nota creada con éxito!',
+        },
       };
-
-      await this.eventsService.create(createEventDto, null);
     }
   }
 }
