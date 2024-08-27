@@ -3,7 +3,7 @@ import {
   initializeDiscordClient,
   getGuildMemberCount,
   getOnlineMemberCount,
-} from '../utils/discordUtils';
+} from '../utils/discord-utils';
 
 @Injectable()
 export class DiscordService implements OnModuleInit {

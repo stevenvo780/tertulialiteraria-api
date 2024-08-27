@@ -5,7 +5,7 @@ import { Events, Repetition } from './entities/events.entity';
 import { User } from '../user/entities/user.entity';
 import { CreateEventsDto } from './dto/create-events.dto';
 import { UpdateEventsDto } from './dto/update-events.dto';
-import { createDiscordEvent } from '../utils/discordUtils';
+import { createDiscordEvent } from '../utils/discord-utils';
 
 @Injectable()
 export class EventsService {
