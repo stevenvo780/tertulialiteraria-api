@@ -70,8 +70,12 @@ export class DiscordController {
     if (eventPayload.type === InteractionType.ApplicationCommand) {
       console.log('eventPayload:', eventPayload.data);
       if (eventPayload.data.name === 'crear-nota') {
-        const titulo = eventPayload.data.options.getString('titulo');
-        const contenido = eventPayload.data.options.getString('contenido');
+        const titulo = eventPayload.data.options.find(
+          (option: any) => option.name === 'titulo',
+        ).value;
+        const contenido = eventPayload.data.options.find(
+          (option: any) => option.name === 'contenido',
+        ).value;
 
         const data = {
           title: titulo,
