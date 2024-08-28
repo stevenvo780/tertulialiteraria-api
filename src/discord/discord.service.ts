@@ -1,21 +1,12 @@
-import { Injectable, OnModuleInit, HttpException } from '@nestjs/common';
+import { Injectable, HttpException } from '@nestjs/common';
 import {
-  initializeDiscordClient,
   getGuildMemberCount,
   getOnlineMemberCount,
 } from '../utils/discord-utils';
 
 @Injectable()
-export class DiscordService implements OnModuleInit {
+export class DiscordService {
   private readonly guildId = process.env.DISCORD_GUILD_ID;
-
-  async onModuleInit() {
-    try {
-      await initializeDiscordClient(process.env.DISCORD_BOT_TOKEN);
-    } catch (error) {
-      throw new HttpException('Failed to initialize Discord client', 500);
-    }
-  }
 
   async getGuildMemberCount(): Promise<number> {
     try {

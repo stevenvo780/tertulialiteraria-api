@@ -7,16 +7,17 @@ import axios from 'axios';
 import * as TurndownService from 'turndown';
 import { CreateEventsDto } from 'src/events/dto/create-events.dto';
 
-const client = new Client({
-  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildScheduledEvents],
-});
-
 const turndownService = new TurndownService();
 
-export async function initializeDiscordClient(token: string): Promise<void> {
+async function initializeDiscordClient(): Promise<Client> {
+  const client = new Client({
+    intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildScheduledEvents],
+  });
+
   try {
-    await client.login(token);
+    await client.login(process.env.DISCORD_TOKEN); // Usa el token de Discord desde las variables de entorno
     console.log('Discord client initialized.');
+    return client;
   } catch (error) {
     console.error('Error initializing Discord client:', error);
     throw error;
@@ -27,6 +28,8 @@ export async function createDiscordEvent(
   guildId: string,
   createEventDto: CreateEventsDto,
 ): Promise<void> {
+  const client = await initializeDiscordClient(); // Inicializa el cliente aquí
+
   try {
     const now = new Date();
     const startDate = new Date(createEventDto.startDate);
@@ -63,23 +66,28 @@ export async function createDiscordEvent(
   } catch (error) {
     console.error('Error creating event in Discord:', error);
     throw error;
+  } finally {
+    client.destroy(); // Asegúrate de destruir el cliente cuando termines
   }
 }
 
-// Obtener el número de miembros de un servidor
 export async function getGuildMemberCount(guildId: string): Promise<number> {
+  const client = await initializeDiscordClient(); // Inicializa el cliente aquí
+
   try {
     const guild = await client.guilds.fetch(guildId);
     return guild.memberCount;
   } catch (error) {
     console.error('Error fetching guild member count:', error);
     throw error;
+  } finally {
+    client.destroy(); // Asegúrate de destruir el cliente cuando termines
   }
 }
 
-// Obtener el número de miembros en línea
 export async function getOnlineMemberCount(guildId: string): Promise<number> {
   const url = `https://discord.com/api/guilds/${guildId}/widget.json`;
+
   try {
     const response = await axios.get(url);
     return response.data.presence_count;
