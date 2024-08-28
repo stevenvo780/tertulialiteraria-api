@@ -9,26 +9,33 @@ import { CreateEventsDto } from 'src/events/dto/create-events.dto';
 
 const turndownService = new TurndownService();
 
-async function initializeDiscordClient(): Promise<Client> {
-  const client = new Client({
-    intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildScheduledEvents],
-  });
+let discordClient: Client | null = null;
 
-  try {
-    await client.login(process.env.DISCORD_TOKEN); // Usa el token de Discord desde las variables de entorno
-    console.log('Discord client initialized.');
-    return client;
-  } catch (error) {
-    console.error('Error initializing Discord client:', error);
-    throw error;
+async function getDiscordClient(): Promise<Client> {
+  if (!discordClient) {
+    discordClient = new Client({
+      intents: [
+        GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildScheduledEvents,
+      ],
+    });
+
+    try {
+      await discordClient.login(process.env.DISCORD_BOT_TOKEN);
+      console.log('Discord client initialized.');
+    } catch (error) {
+      console.error('Error initializing Discord client:', error);
+      throw error;
+    }
   }
+  return discordClient;
 }
 
 export async function createDiscordEvent(
   guildId: string,
   createEventDto: CreateEventsDto,
 ): Promise<void> {
-  const client = await initializeDiscordClient(); // Inicializa el cliente aquí
+  const client = await getDiscordClient();
 
   try {
     const now = new Date();
@@ -66,13 +73,11 @@ export async function createDiscordEvent(
   } catch (error) {
     console.error('Error creating event in Discord:', error);
     throw error;
-  } finally {
-    client.destroy(); // Asegúrate de destruir el cliente cuando termines
   }
 }
 
 export async function getGuildMemberCount(guildId: string): Promise<number> {
-  const client = await initializeDiscordClient(); // Inicializa el cliente aquí
+  const client = await getDiscordClient();
 
   try {
     const guild = await client.guilds.fetch(guildId);
@@ -80,8 +85,6 @@ export async function getGuildMemberCount(guildId: string): Promise<number> {
   } catch (error) {
     console.error('Error fetching guild member count:', error);
     throw error;
-  } finally {
-    client.destroy(); // Asegúrate de destruir el cliente cuando termines
   }
 }
 
