@@ -3,6 +3,8 @@ import {
   CanActivate,
   ExecutionContext,
   UnauthorizedException,
+  InternalServerErrorException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { Request } from 'express';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -47,8 +49,41 @@ export class FirebaseAuthGuard implements CanActivate {
 
       return true;
     } catch (error) {
-      console.error(error);
-      throw new UnauthorizedException('Invalid or expired token');
+      if (error.code) {
+        switch (error.code) {
+          case 'auth/id-token-expired':
+            throw new UnauthorizedException('Token has expired');
+          case 'auth/invalid-id-token':
+            throw new UnauthorizedException('Invalid token');
+          case 'auth/argument-error':
+            throw new UnauthorizedException('Token argument error');
+          case 'auth/user-disabled':
+            throw new ForbiddenException('User account is disabled');
+          case 'auth/user-not-found':
+            throw new UnauthorizedException('User not found');
+          case 'auth/requires-recent-login':
+            throw new UnauthorizedException('Recent login required');
+          case 'auth/invalid-credential':
+            throw new UnauthorizedException('Invalid credential');
+          default:
+            console.error(
+              'Unhandled Firebase error code:',
+              error.code,
+              error.message,
+            );
+            throw new InternalServerErrorException(
+              'Unexpected authentication error',
+            );
+        }
+      } else {
+        console.error(
+          'Unexpected error during Firebase token verification:',
+          error,
+        );
+        throw new InternalServerErrorException(
+          'Unexpected authentication error',
+        );
+      }
     }
   }
 }

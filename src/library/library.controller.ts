@@ -34,15 +34,21 @@ import { DeleteResult } from 'typeorm';
 export class LibraryController {
   constructor(private readonly libraryService: LibraryService) {}
 
-  @ApiOperation({ summary: 'Get all library references' })
+  @ApiOperation({ summary: 'Get all library references with pagination' })
   @ApiOkResponse({
-    description: 'List of all library references',
+    description: 'Paginated list of library references',
     type: [Library],
   })
   @Get()
   @UseGuards(OptionalFirebaseAuthGuard)
-  findAll(@Request() req: RequestWithUser): Promise<Library[]> {
-    return this.libraryService.findAll(req.user);
+  findAll(
+    @Request() req: RequestWithUser,
+    @Query('page') page: string,
+    @Query('limit') limit: string,
+  ): Promise<{ data: Library[]; total: number; currentPage: number }> {
+    const pageNumber = parseInt(page, 10) || 1;
+    const limitNumber = parseInt(limit, 10) || 10;
+    return this.libraryService.findAll(req.user, pageNumber, limitNumber);
   }
 
   @ApiOperation({ summary: 'Get a library reference by ID' })

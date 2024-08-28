@@ -33,7 +33,11 @@ export class LibraryService {
     return this.libraryRepository.save(newLibraryItem);
   }
 
-  findAll(user?: User): Promise<Library[]> {
+  async findAll(
+    user?: User,
+    page = 1,
+    limit = 10,
+  ): Promise<{ data: Library[]; total: number; currentPage: number }> {
     let query = this.libraryRepository
       .createQueryBuilder('library')
       .leftJoinAndSelect('library.children', 'children')
@@ -62,7 +66,12 @@ export class LibraryService {
       });
     }
 
-    return query.getMany();
+    const [data, total] = await query
+      .take(limit)
+      .skip((page - 1) * limit)
+      .getManyAndCount();
+
+    return { data, total, currentPage: page };
   }
 
   async findOne(id: number, user?: User): Promise<Library> {
