@@ -24,7 +24,7 @@ export class DiscordController {
   constructor(
     private readonly discordService: DiscordService,
     private readonly libraryService: LibraryService,
-  ) { }
+  ) {}
 
   @ApiOperation({
     summary: 'Obtener el total de miembros de un servidor de Discord',
@@ -73,10 +73,11 @@ export class DiscordController {
     }
 
     if (eventPayload.type === InteractionType.ApplicationCommand) {
-      console.log('eventPayload:', eventPayload);
       const interaction = eventPayload as ChatInputCommandInteraction;
       console.log('interaction:', interaction);
-      if (interaction.commandName === 'create_note') {
+      console.log('interaction.commandName:', interaction.commandName);
+      console.log('interaction.options:', interaction.options);
+      if (interaction.commandName === 'crear-nota') {
         const titulo = interaction.options.getString('titulo');
         const contenido = interaction.options.getString('contenido');
 
