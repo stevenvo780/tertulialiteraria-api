@@ -53,7 +53,7 @@ export class DiscordController {
   @Post('webhook')
   @HttpCode(HttpStatus.OK)
   async handleDiscordWebhook(
-    @Body() eventPayload: Interaction,
+    @Body() eventPayload: any,
     @Headers('x-signature-ed25519') signature: string,
     @Headers('x-signature-timestamp') timestamp: string,
   ): Promise<any> {
@@ -73,13 +73,10 @@ export class DiscordController {
     }
 
     if (eventPayload.type === InteractionType.ApplicationCommand) {
-      const interaction = eventPayload as ChatInputCommandInteraction;
-      console.log('interaction:', interaction);
-      console.log('interaction.commandName:', interaction.commandName);
-      console.log('interaction.options:', interaction.options);
-      if (interaction.commandName === 'crear-nota') {
-        const titulo = interaction.options.getString('titulo');
-        const contenido = interaction.options.getString('contenido');
+      console.log('eventPayload:', eventPayload.data);
+      if (eventPayload.data.name === 'crear-nota') {
+        const titulo = eventPayload.data.options.getString('titulo');
+        const contenido = eventPayload.data.options.getString('contenido');
 
         const data = {
           title: titulo,
