@@ -24,7 +24,7 @@ export class DiscordController {
   constructor(
     private readonly discordService: DiscordService,
     private readonly libraryService: LibraryService,
-  ) {}
+  ) { }
 
   @ApiOperation({
     summary: 'Obtener el total de miembros de un servidor de Discord',
@@ -67,14 +67,14 @@ export class DiscordController {
     if (!isVerified) {
       throw new Error('Invalid request signature');
     }
-
+    console.log('Event Payload:', eventPayload.type);
     if (eventPayload.type === (InteractionType.Ping as number)) {
       return { type: InteractionResponseType.Pong };
     }
 
     if (eventPayload.type === InteractionType.ApplicationCommand) {
       const interaction = eventPayload as ChatInputCommandInteraction;
-
+      console.log('Command:', interaction.commandName);
       if (interaction.commandName === 'create_note') {
         const titulo = interaction.options.getString('titulo');
         const contenido = interaction.options.getString('contenido');
@@ -85,12 +85,19 @@ export class DiscordController {
           referenceDate: new Date(),
         };
 
-        await this.libraryService.create(data, null);
-
+        const note = await this.libraryService.create(data, null);
+        console.log('Note:', note);
         return {
           type: InteractionResponseType.ChannelMessageWithSource,
           data: {
-            content: 'Nota creada con éxito!',
+            content: `${process.env.FRONT_URL}/library/${note.id}`,
+          },
+        };
+      } else {
+        return {
+          type: InteractionResponseType.ChannelMessageWithSource,
+          data: {
+            content: 'Comando no reconocido',
           },
         };
       }
