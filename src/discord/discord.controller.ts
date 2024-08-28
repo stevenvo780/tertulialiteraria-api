@@ -10,12 +10,7 @@ import {
 import { DiscordService } from './discord.service';
 import { LibraryService } from '../library/library.service';
 import { ApiTags, ApiOperation, ApiOkResponse } from '@nestjs/swagger';
-import {
-  Interaction,
-  InteractionType,
-  InteractionResponseType,
-  ChatInputCommandInteraction,
-} from 'discord.js';
+import { InteractionType, InteractionResponseType } from 'discord.js';
 import * as nacl from 'tweetnacl';
 
 @ApiTags('discord')
