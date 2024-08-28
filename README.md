@@ -33,7 +33,7 @@ La documentación completa de la API está disponible en el siguiente enlace:
 1. Clona el repositorio:
 
     ```bash
-    git clone https://github.com/yourusername/tertulia-literaria-api.git
+    git clone https://github.com/stevenvo780/tertulialiteraria-api.git
     cd tertulia-literaria-api
     ```
 
