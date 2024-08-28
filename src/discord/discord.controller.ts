@@ -73,8 +73,9 @@ export class DiscordController {
     }
 
     if (eventPayload.type === InteractionType.ApplicationCommand) {
+      console.log('eventPayload:', eventPayload);
       const interaction = eventPayload as ChatInputCommandInteraction;
-      console.log('Command:', interaction.commandName);
+      console.log('interaction:', interaction);
       if (interaction.commandName === 'create_note') {
         const titulo = interaction.options.getString('titulo');
         const contenido = interaction.options.getString('contenido');
