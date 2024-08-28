@@ -1,8 +1,15 @@
 {
   "name": "tertulia-literaria-api",
   "version": "0.0.1",
-  "description": "Este es un proyecto par Tertulia Literaria una comunidad de discord",
-  "author": "Steven Vallejo Ortiz",
+  "description": "Este es un proyecto para Tertulia Literaria, una comunidad de Discord",
+  "author": {
+    "name": "Steven Vallejo Ortiz",
+    "email": "stevenvallejo780@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/stevenvo780/tertulia-literaria-api.git"
+  },
   "private": false,
   "license": "MIT",
   "scripts": {
