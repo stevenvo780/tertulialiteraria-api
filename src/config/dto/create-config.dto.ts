@@ -22,4 +22,11 @@ export class CreateConfigDto {
     type: String,
   })
   projectInfo: string;
+
+  @IsString()
+  @ApiProperty({
+    description: 'Políticas de privacidad en formato HTML',
+    type: String,
+  })
+  privacyPolicies: string;
 }
