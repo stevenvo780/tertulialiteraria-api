@@ -142,7 +142,7 @@ export class LibraryService {
     }
 
     Object.assign(libraryItem, updateLibraryDto);
-    return this.libraryRepository.save(libraryItem);
+    return await this.libraryRepository.save(libraryItem);
   }
 
   async remove(id: number, user: User): Promise<DeleteResult> {

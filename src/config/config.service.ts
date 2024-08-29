@@ -37,6 +37,8 @@ export class ConfigService {
     defaultConfig.staffNormative = '<p>Normativa del staff predeterminada.</p>';
     defaultConfig.projectInfo =
       '<p>Información del proyecto predeterminada.</p>';
+    defaultConfig.privacyPolicies =
+      '<p>Políticas de privacidad predeterminadas.</p>';
 
     return this.configRepository.save(defaultConfig);
   }
@@ -60,5 +62,10 @@ export class ConfigService {
   async getProjectInfo(): Promise<string> {
     const config = await this.getConfig();
     return config.projectInfo;
+  }
+
+  async getPrivacyPolicies(): Promise<string> {
+    const config = await this.getConfig();
+    return config.privacyPolicies;
   }
 }
