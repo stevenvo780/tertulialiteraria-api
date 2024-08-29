@@ -11,7 +11,7 @@ export class Config extends SharedProp {
   })
   id: number;
 
-  @Column('text')
+  @Column({ type: 'text', default: '' })
   @ApiProperty({
     description: 'Normativas generales en formato HTML',
     type: String,
@@ -19,7 +19,7 @@ export class Config extends SharedProp {
   })
   generalNormative: string;
 
-  @Column('text')
+  @Column({ type: 'text', default: '' })
   @ApiProperty({
     description: 'Normativas del staff en formato HTML',
     type: String,
@@ -27,11 +27,19 @@ export class Config extends SharedProp {
   })
   staffNormative: string;
 
-  @Column('text')
+  @Column({ type: 'text', default: '' })
   @ApiProperty({
     description: 'Información del proyecto en formato HTML',
     type: String,
     example: '<p>Información del proyecto...</p>',
   })
   projectInfo: string;
+
+  @Column({ type: 'text', default: '' })
+  @ApiProperty({
+    description: 'Políticas de privacidad en formato HTML',
+    type: String,
+    example: '<p>Políticas de privacidad...</p>',
+  })
+  privacyPolicies: string;
 }

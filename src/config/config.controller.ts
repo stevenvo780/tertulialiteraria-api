@@ -48,6 +48,16 @@ export class ConfigController {
     return this.configService.getProjectInfo();
   }
 
+  @Get('privacy-policies')
+  @ApiOperation({ summary: 'Obtener las políticas de privacidad' })
+  @ApiOkResponse({
+    description: 'Políticas de privacidad devueltas correctamente',
+    type: String,
+  })
+  async getPrivacyPolicies(): Promise<string> {
+    return this.configService.getPrivacyPolicies();
+  }
+
   @Patch()
   @UseGuards(FirebaseAuthGuard, RolesGuard)
   @Roles(UserRole.SUPER_ADMIN)
