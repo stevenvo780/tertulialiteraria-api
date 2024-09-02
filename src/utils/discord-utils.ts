@@ -51,7 +51,6 @@ export async function createDiscordEvent(
     }
 
     const guild = await client.guilds.fetch(guildId);
-    console.log('Guild fetched successfully.');
 
     const markdownDescription = turndownService.turndown(
       createEventDto.description,
