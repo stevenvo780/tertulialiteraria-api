@@ -13,7 +13,7 @@ async function bootstrap() {
   const appProvider = app.get(AppProvider);
   appProvider.setApp(app);
   const config = new DocumentBuilder()
-    .setTitle('POS API')
+    .setTitle('TERTULIA LITERARIA API')
     .setDescription(
       'Esta es la documentacion de TERTULIA LITERARIA sientete libre de aportar a nuestro proyecto',
     )
