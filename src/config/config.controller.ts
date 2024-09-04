@@ -58,6 +58,16 @@ export class ConfigController {
     return this.configService.getPrivacyPolicies();
   }
 
+  @Get('privacy-notice')
+  @ApiOperation({ summary: 'Obtener el aviso de privacidad' })
+  @ApiOkResponse({
+    description: 'Aviso de privacidad devuelto correctamente',
+    type: String,
+  })
+  async getPrivacyNotice(): Promise<string> {
+    return this.configService.getPrivacyNotice();
+  }
+
   @Patch()
   @UseGuards(FirebaseAuthGuard, RolesGuard)
   @Roles(UserRole.SUPER_ADMIN)

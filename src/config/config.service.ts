@@ -39,6 +39,7 @@ export class ConfigService {
       '<p>Información del proyecto predeterminada.</p>';
     defaultConfig.privacyPolicies =
       '<p>Políticas de privacidad predeterminadas.</p>';
+    defaultConfig.privacyNotice = '<p>Aviso de privacidad predeterminado.</p>';
 
     return this.configRepository.save(defaultConfig);
   }
@@ -67,5 +68,10 @@ export class ConfigService {
   async getPrivacyPolicies(): Promise<string> {
     const config = await this.getConfig();
     return config.privacyPolicies;
+  }
+
+  async getPrivacyNotice(): Promise<string> {
+    const config = await this.getConfig();
+    return config.privacyNotice;
   }
 }
