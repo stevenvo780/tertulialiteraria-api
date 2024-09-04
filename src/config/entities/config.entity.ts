@@ -42,4 +42,12 @@ export class Config extends SharedProp {
     example: '<p>Políticas de privacidad...</p>',
   })
   privacyPolicies: string;
+
+  @Column({ type: 'text', default: '' })
+  @ApiProperty({
+    description: 'Aviso de privacidad en formato HTML',
+    type: String,
+    example: '<p>Aviso de privacidad...</p>',
+  })
+  privacyNotice: string;
 }
