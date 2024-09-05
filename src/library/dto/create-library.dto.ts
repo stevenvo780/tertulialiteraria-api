@@ -1,4 +1,4 @@
-import { IsString, IsDate, IsOptional } from 'class-validator';
+import { IsString, IsDate, IsOptional, IsObject } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateLibraryDto {
@@ -9,12 +9,15 @@ export class CreateLibraryDto {
   })
   title: string;
 
-  @IsString()
+  @IsObject()
   @ApiProperty({
-    description: 'The description of the library reference',
-    type: String,
+    description: 'The description of the library reference (HTML and CSS)',
+    example: {
+      html: '<p>Some description...</p>',
+      css: 'body { color: black; }',
+    },
   })
-  description: string;
+  description: { html: string; css: string };
 
   @IsDate()
   @ApiProperty({ description: 'The date of the library reference', type: Date })

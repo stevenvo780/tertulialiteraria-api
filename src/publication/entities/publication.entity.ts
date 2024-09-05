@@ -26,13 +26,16 @@ export class Publication extends SharedProp {
   })
   title: string;
 
-  @Column('text')
+  @Column({ type: 'json', default: { html: '', css: '' } })
   @ApiProperty({
     description: 'Contenido de la publicación en formato JSON con HTML y CSS',
     type: 'object',
-    example: '<h1>Publicación sobre filosofía moderna</h1>',
+    example: {
+      html: '<h1>Publicación sobre filosofía moderna</h1>',
+      css: 'h1 { color: blue; }',
+    },
   })
-  content: string;
+  content: { html: string; css: string };
 
   @ManyToOne(() => User)
   @JoinColumn()

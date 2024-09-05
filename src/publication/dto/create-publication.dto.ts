@@ -8,8 +8,13 @@ export class CreatePublicationDto {
 
   @IsObject()
   @ApiProperty({
-    description: 'The author of the publication',
+    description:
+      'The content of the publication in JSON format with HTML and CSS',
     type: Object,
+    example: {
+      html: '<h1>Publicación sobre filosofía moderna</h1>',
+      css: 'h1 { color: blue; }',
+    },
   })
-  content: string;
+  content: { html: string; css: string };
 }

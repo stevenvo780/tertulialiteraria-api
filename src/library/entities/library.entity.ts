@@ -33,12 +33,15 @@ export class Library extends SharedProp {
   })
   title: string;
 
-  @Column('text')
+  @Column({ type: 'json', default: { html: '', css: '' } })
   @ApiProperty({
-    description: 'Descripción de la biblioteca',
-    example: 'Una colección de recursos literarios y artículos académicos...',
+    description: 'Descripción de la biblioteca en formato JSON (HTML y CSS)',
+    example: {
+      html: '<p>Una colección de recursos literarios...</p>',
+      css: 'p { font-size: 16px; color: black; }',
+    },
   })
-  description: string;
+  description: { html: string; css: string };
 
   @Column()
   @ApiProperty({

@@ -33,13 +33,26 @@ export class ConfigService {
 
   async createDefaultConfig(): Promise<Config> {
     const defaultConfig = new Config();
-    defaultConfig.generalNormative = '<p>Normativa general predeterminada.</p>';
-    defaultConfig.staffNormative = '<p>Normativa del staff predeterminada.</p>';
-    defaultConfig.projectInfo =
-      '<p>Información del proyecto predeterminada.</p>';
-    defaultConfig.privacyPolicies =
-      '<p>Políticas de privacidad predeterminadas.</p>';
-    defaultConfig.privacyNotice = '<p>Aviso de privacidad predeterminado.</p>';
+    defaultConfig.generalNormative = {
+      html: '<p>Normativa general predeterminada.</p>',
+      css: '',
+    };
+    defaultConfig.staffNormative = {
+      html: '<p>Normativa del staff predeterminada.</p>',
+      css: '',
+    };
+    defaultConfig.projectInfo = {
+      html: '<p>Información del proyecto predeterminada.</p>',
+      css: '',
+    };
+    defaultConfig.privacyPolicies = {
+      html: '<p>Políticas de privacidad predeterminadas.</p>',
+      css: '',
+    };
+    defaultConfig.privacyNotice = {
+      html: '<p>Aviso de privacidad predeterminado.</p>',
+      css: '',
+    };
 
     return this.configRepository.save(defaultConfig);
   }
@@ -52,26 +65,26 @@ export class ConfigService {
 
   async getGeneralNormative(): Promise<string> {
     const config = await this.getConfig();
-    return config.generalNormative;
+    return config.generalNormative.html;
   }
 
   async getStaffNormative(): Promise<string> {
     const config = await this.getConfig();
-    return config.staffNormative;
+    return config.staffNormative.html;
   }
 
   async getProjectInfo(): Promise<string> {
     const config = await this.getConfig();
-    return config.projectInfo;
+    return config.projectInfo.html;
   }
 
   async getPrivacyPolicies(): Promise<string> {
     const config = await this.getConfig();
-    return config.privacyPolicies;
+    return config.privacyPolicies.html;
   }
 
   async getPrivacyNotice(): Promise<string> {
     const config = await this.getConfig();
-    return config.privacyNotice;
+    return config.privacyNotice.html;
   }
 }

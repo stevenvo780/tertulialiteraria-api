@@ -1,9 +1,8 @@
-import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsObject } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { TemplateType } from '../entities/template.entity';
 
 export class CreateTemplateDto {
-  @IsString()
   @IsNotEmpty()
   @ApiProperty({
     description: 'Nombre de la plantilla',
@@ -19,11 +18,14 @@ export class CreateTemplateDto {
   })
   type: TemplateType;
 
-  @IsString()
+  @IsObject()
   @IsNotEmpty()
   @ApiProperty({
-    description: 'Contenido de la plantilla en formato de texto',
-    example: '<p>Este es el contenido de la plantilla...</p>',
+    description: 'Contenido de la plantilla en formato JSON con HTML y CSS',
+    example: {
+      html: '<p>Este es el contenido de la plantilla...</p>',
+      css: 'p { color: blue; }',
+    },
   })
-  content: string;
+  content: { html: string; css: string };
 }

@@ -36,10 +36,14 @@ export class Template extends SharedProp {
   })
   type: TemplateType;
 
-  @Column('text')
+  @Column({ type: 'json', default: { html: '', css: '' } })
   @ApiProperty({
-    description: 'Contenido de la plantilla en formato de texto largo',
-    example: '<p>Este es el contenido de la plantilla...</p>',
+    description: 'Contenido de la plantilla en formato JSON con HTML y CSS',
+    type: 'object',
+    example: {
+      html: '<p>Este es el contenido de la plantilla...</p>',
+      css: 'p { color: blue; }',
+    },
   })
-  content: string;
+  content: { html: string; css: string };
 }

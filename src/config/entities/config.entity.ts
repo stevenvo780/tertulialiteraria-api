@@ -11,43 +11,49 @@ export class Config extends SharedProp {
   })
   id: number;
 
-  @Column({ type: 'text', default: '' })
+  @Column({ type: 'json', default: { html: '', css: '' } })
   @ApiProperty({
-    description: 'Normativas generales en formato HTML',
-    type: String,
-    example: '<p>Normativas generales...</p>',
+    description: 'Normativas generales en formato JSON con HTML y CSS',
+    type: Object,
+    example: {
+      html: '<p>Normativas generales...</p>',
+      css: 'body { color: red; }',
+    },
   })
-  generalNormative: string;
+  generalNormative: { html: string; css: string };
 
-  @Column({ type: 'text', default: '' })
+  @Column({ type: 'json', default: { html: '', css: '' } })
   @ApiProperty({
-    description: 'Normativas del staff en formato HTML',
-    type: String,
-    example: '<p>Normativas del staff...</p>',
+    description: 'Normativas del staff en formato JSON con HTML y CSS',
+    type: Object,
+    example: {
+      html: '<p>Normativas del staff...</p>',
+      css: 'body { font-size: 14px; }',
+    },
   })
-  staffNormative: string;
+  staffNormative: { html: string; css: string };
 
-  @Column({ type: 'text', default: '' })
+  @Column({ type: 'json', default: { html: '', css: '' } })
   @ApiProperty({
-    description: 'Información del proyecto en formato HTML',
-    type: String,
-    example: '<p>Información del proyecto...</p>',
+    description: 'Información del proyecto en formato JSON con HTML y CSS',
+    type: Object,
+    example: { html: '<p>Información del proyecto...</p>', css: '' },
   })
-  projectInfo: string;
+  projectInfo: { html: string; css: string };
 
-  @Column({ type: 'text', default: '' })
+  @Column({ type: 'json', default: { html: '', css: '' } })
   @ApiProperty({
-    description: 'Políticas de privacidad en formato HTML',
-    type: String,
-    example: '<p>Políticas de privacidad...</p>',
+    description: 'Políticas de privacidad en formato JSON con HTML y CSS',
+    type: Object,
+    example: { html: '<p>Políticas de privacidad...</p>', css: '' },
   })
-  privacyPolicies: string;
+  privacyPolicies: { html: string; css: string };
 
-  @Column({ type: 'text', default: '' })
+  @Column({ type: 'json', default: { html: '', css: '' } })
   @ApiProperty({
-    description: 'Aviso de privacidad en formato HTML',
-    type: String,
-    example: '<p>Aviso de privacidad...</p>',
+    description: 'Aviso de privacidad en formato JSON con HTML y CSS',
+    type: Object,
+    example: { html: '<p>Aviso de privacidad...</p>', css: '' },
   })
-  privacyNotice: string;
+  privacyNotice: { html: string; css: string };
 }
