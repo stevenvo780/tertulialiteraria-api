@@ -9,6 +9,7 @@ import {
 import { User } from '../../user/entities/user.entity';
 import { ApiProperty } from '@nestjs/swagger';
 import { SharedProp } from '../../common/entities/sharedProp.helper';
+import { HtmlCssContent, exampleHtmlCssContent } from '../../utils/types';
 
 export enum Repetition {
   NONE = 'none',
@@ -39,9 +40,9 @@ export class Events extends SharedProp {
   @ApiProperty({
     description: 'Descripción del evento en formato JSON',
     type: 'object',
-    example: { content: 'Descripción detallada del evento...' },
+    example: exampleHtmlCssContent,
   })
-  description: string;
+  description: HtmlCssContent;
 
   @Column()
   @ApiProperty({

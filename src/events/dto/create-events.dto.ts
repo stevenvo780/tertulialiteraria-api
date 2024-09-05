@@ -1,5 +1,6 @@
 import { IsString, IsDate, IsJSON, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { HtmlCssContent, exampleHtmlCssContent } from '../../utils/types';
 
 export class CreateEventsDto {
   @IsString()
@@ -10,8 +11,9 @@ export class CreateEventsDto {
   @ApiProperty({
     description: 'El objeto JSON que describe el evento',
     type: Object,
+    example: exampleHtmlCssContent,
   })
-  description: object;
+  description: HtmlCssContent;
 
   @IsDate()
   @ApiProperty({

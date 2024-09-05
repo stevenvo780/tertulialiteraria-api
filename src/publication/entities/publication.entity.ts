@@ -2,13 +2,18 @@ import {
   Entity,
   Column,
   PrimaryGeneratedColumn,
-  Index,
   ManyToOne,
   JoinColumn,
+  Index,
 } from 'typeorm';
 import { User } from '../../user/entities/user.entity';
 import { ApiProperty } from '@nestjs/swagger';
 import { SharedProp } from '../../common/entities/sharedProp.helper';
+import {
+  HtmlCssContent,
+  defaultHtmlCssContent,
+  exampleHtmlCssContent,
+} from '../../utils/types';
 
 @Entity()
 export class Publication extends SharedProp {
@@ -26,16 +31,13 @@ export class Publication extends SharedProp {
   })
   title: string;
 
-  @Column({ type: 'json', default: { html: '', css: '' } })
+  @Column({ type: 'json', default: defaultHtmlCssContent })
   @ApiProperty({
     description: 'Contenido de la publicación en formato JSON con HTML y CSS',
     type: 'object',
-    example: {
-      html: '<h1>Publicación sobre filosofía moderna</h1>',
-      css: 'h1 { color: blue; }',
-    },
+    example: exampleHtmlCssContent,
   })
-  content: { html: string; css: string };
+  content: HtmlCssContent;
 
   @ManyToOne(() => User)
   @JoinColumn()

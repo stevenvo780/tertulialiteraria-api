@@ -1,5 +1,6 @@
 import { IsString, IsObject } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { HtmlCssContent, exampleHtmlCssContent } from '../../utils/types';
 
 export class CreatePublicationDto {
   @IsString()
@@ -11,10 +12,7 @@ export class CreatePublicationDto {
     description:
       'The content of the publication in JSON format with HTML and CSS',
     type: Object,
-    example: {
-      html: '<h1>Publicación sobre filosofía moderna</h1>',
-      css: 'h1 { color: blue; }',
-    },
+    example: exampleHtmlCssContent,
   })
-  content: { html: string; css: string };
+  content: HtmlCssContent;
 }

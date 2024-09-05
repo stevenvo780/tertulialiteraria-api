@@ -1,6 +1,7 @@
 import { IsEnum, IsNotEmpty, IsObject } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { TemplateType } from '../entities/template.entity';
+import { HtmlCssContent, exampleHtmlCssContent } from '../../utils/types';
 
 export class CreateTemplateDto {
   @IsNotEmpty()
@@ -22,10 +23,7 @@ export class CreateTemplateDto {
   @IsNotEmpty()
   @ApiProperty({
     description: 'Contenido de la plantilla en formato JSON con HTML y CSS',
-    example: {
-      html: '<p>Este es el contenido de la plantilla...</p>',
-      css: 'p { color: blue; }',
-    },
+    example: exampleHtmlCssContent,
   })
-  content: { html: string; css: string };
+  content: HtmlCssContent;
 }

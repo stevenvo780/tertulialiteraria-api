@@ -10,6 +10,11 @@ import {
 import { SharedProp } from '../../common/entities/sharedProp.helper';
 import { User } from '../../user/entities/user.entity';
 import { ApiProperty } from '@nestjs/swagger';
+import {
+  HtmlCssContent,
+  exampleHtmlCssContent,
+  defaultHtmlCssContent,
+} from '../../utils/types';
 
 export enum LibraryVisibility {
   GENERAL = 'general',
@@ -33,15 +38,12 @@ export class Library extends SharedProp {
   })
   title: string;
 
-  @Column({ type: 'json', default: { html: '', css: '' } })
+  @Column({ type: 'json', default: defaultHtmlCssContent })
   @ApiProperty({
     description: 'Descripción de la biblioteca en formato JSON (HTML y CSS)',
-    example: {
-      html: '<p>Una colección de recursos literarios...</p>',
-      css: 'p { font-size: 16px; color: black; }',
-    },
+    example: exampleHtmlCssContent,
   })
-  description: { html: string; css: string };
+  description: HtmlCssContent;
 
   @Column()
   @ApiProperty({

@@ -1,6 +1,11 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { SharedProp } from '../../common/entities/sharedProp.helper';
+import {
+  HtmlCssContent,
+  exampleHtmlCssContent,
+  defaultHtmlCssContent,
+} from '../../utils/types';
 
 @Entity()
 export class Config extends SharedProp {
@@ -11,49 +16,43 @@ export class Config extends SharedProp {
   })
   id: number;
 
-  @Column({ type: 'json', default: { html: '', css: '' } })
+  @Column({ type: 'json', default: defaultHtmlCssContent })
   @ApiProperty({
     description: 'Normativas generales en formato JSON con HTML y CSS',
     type: Object,
-    example: {
-      html: '<p>Normativas generales...</p>',
-      css: 'body { color: red; }',
-    },
+    example: exampleHtmlCssContent,
   })
-  generalNormative: { html: string; css: string };
+  generalNormative: HtmlCssContent;
 
-  @Column({ type: 'json', default: { html: '', css: '' } })
+  @Column({ type: 'json', default: defaultHtmlCssContent })
   @ApiProperty({
     description: 'Normativas del staff en formato JSON con HTML y CSS',
     type: Object,
-    example: {
-      html: '<p>Normativas del staff...</p>',
-      css: 'body { font-size: 14px; }',
-    },
+    example: exampleHtmlCssContent,
   })
-  staffNormative: { html: string; css: string };
+  staffNormative: HtmlCssContent;
 
-  @Column({ type: 'json', default: { html: '', css: '' } })
+  @Column({ type: 'json', default: defaultHtmlCssContent })
   @ApiProperty({
     description: 'Información del proyecto en formato JSON con HTML y CSS',
     type: Object,
-    example: { html: '<p>Información del proyecto...</p>', css: '' },
+    example: exampleHtmlCssContent,
   })
-  projectInfo: { html: string; css: string };
+  projectInfo: HtmlCssContent;
 
-  @Column({ type: 'json', default: { html: '', css: '' } })
+  @Column({ type: 'json', default: defaultHtmlCssContent })
   @ApiProperty({
     description: 'Políticas de privacidad en formato JSON con HTML y CSS',
     type: Object,
-    example: { html: '<p>Políticas de privacidad...</p>', css: '' },
+    example: exampleHtmlCssContent,
   })
-  privacyPolicies: { html: string; css: string };
+  privacyPolicies: HtmlCssContent;
 
-  @Column({ type: 'json', default: { html: '', css: '' } })
+  @Column({ type: 'json', default: defaultHtmlCssContent })
   @ApiProperty({
     description: 'Aviso de privacidad en formato JSON con HTML y CSS',
     type: Object,
-    example: { html: '<p>Aviso de privacidad...</p>', css: '' },
+    example: exampleHtmlCssContent,
   })
-  privacyNotice: { html: string; css: string };
+  privacyNotice: HtmlCssContent;
 }

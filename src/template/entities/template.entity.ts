@@ -1,6 +1,11 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { SharedProp } from '../../common/entities/sharedProp.helper';
+import {
+  HtmlCssContent,
+  defaultHtmlCssContent,
+  exampleHtmlCssContent,
+} from '../../utils/types';
 
 export enum TemplateType {
   NOTES = 'Notes',
@@ -36,14 +41,11 @@ export class Template extends SharedProp {
   })
   type: TemplateType;
 
-  @Column({ type: 'json', default: { html: '', css: '' } })
+  @Column({ type: 'json', default: defaultHtmlCssContent })
   @ApiProperty({
     description: 'Contenido de la plantilla en formato JSON con HTML y CSS',
     type: 'object',
-    example: {
-      html: '<p>Este es el contenido de la plantilla...</p>',
-      css: 'p { color: blue; }',
-    },
+    example: exampleHtmlCssContent,
   })
-  content: { html: string; css: string };
+  content: HtmlCssContent;
 }

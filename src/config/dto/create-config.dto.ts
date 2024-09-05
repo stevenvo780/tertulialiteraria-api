@@ -1,47 +1,42 @@
 import { IsObject } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { HtmlCssContent, exampleHtmlCssContent } from '../../utils/types';
 
 export class CreateConfigDto {
   @IsObject()
   @ApiProperty({
     description: 'Normativas generales en formato JSON con HTML y CSS',
-    example: {
-      html: '<p>Normativas generales...</p>',
-      css: 'body { color: red; }',
-    },
+    example: exampleHtmlCssContent,
   })
-  generalNormative: { html: string; css: string };
+  generalNormative: HtmlCssContent;
 
   @IsObject()
   @ApiProperty({
     description: 'Normativas del staff en formato JSON con HTML y CSS',
-    example: {
-      html: '<p>Normativas del staff...</p>',
-      css: 'body { font-size: 14px; }',
-    },
+    example: exampleHtmlCssContent,
   })
-  staffNormative: { html: string; css: string };
+  staffNormative: HtmlCssContent;
 
   @IsObject()
   @ApiProperty({
     description: 'Información del proyecto en formato JSON con HTML y CSS',
-    example: { html: '<p>Información del proyecto...</p>', css: '' },
+    example: exampleHtmlCssContent,
   })
-  projectInfo: { html: string; css: string };
+  projectInfo: HtmlCssContent;
 
   @IsObject()
   @ApiProperty({
     description: 'Políticas de privacidad en formato JSON con HTML y CSS',
-    example: { html: '<p>Políticas de privacidad...</p>', css: '' },
+    example: exampleHtmlCssContent,
   })
-  privacyPolicies: { html: string; css: string };
+  privacyPolicies: HtmlCssContent;
 
   @IsObject()
   @ApiProperty({
     description: 'Aviso de privacidad en formato JSON con HTML y CSS',
-    example: { html: '<p>Aviso de privacidad...</p>', css: '' },
+    example: exampleHtmlCssContent,
   })
-  privacyNotice: { html: string; css: string };
+  privacyNotice: HtmlCssContent;
 }
 
 export class UpdateConfigDto extends CreateConfigDto {}
