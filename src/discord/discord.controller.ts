@@ -84,11 +84,16 @@ export class DiscordController {
         };
 
         const note = await this.libraryService.create(data, null);
+        const truncatedContent =
+          contenido.length > 1000
+            ? contenido.substring(0, 1000) + '...'
+            : contenido;
         console.log('Note:', note);
+
         return {
           type: InteractionResponseType.ChannelMessageWithSource,
           data: {
-            content: `${process.env.FRONT_URL}/library/${note.id}`,
+            content: `URL: ${process.env.FRONT_URL}/library/${note.id}\n\nContenido:\n${truncatedContent}`,
           },
         };
       } else {
